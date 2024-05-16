@@ -45,6 +45,9 @@ def main(args):
     """ Model """
     model = RobertaForToxicClassification(config['model'],config['n_class_'+dataset_name])
     model = model.to(device)
+    model_save_path = config['model_save_path']
+    if not os.path.exists(model_save_path):
+        os.makedirs(model_save_path)
 
     """ Optimizer """
     optimizer_name = config['optimizer']
@@ -76,10 +79,10 @@ def main(args):
     """ Define name of model """
     model_name = "yu22_" + s if "yu" in dataset_path else "pav20_" + s
     """ Train """
-    train(model, tokenizer, train_loader, val_loader, config['training_epochs'],optimizer, criterion, os.path.join(config['model_save_path'], model_name), device)
+    train(model, tokenizer, train_loader, val_loader, config['training_epochs'],optimizer, criterion, os.path.join(model_save_path, model_name), device)
 
     """ Evaluate """
-    model.load_state_dict(torch.load(os.path.join(config['model_save_path'], model_name))) # Load best model
+    model.load_state_dict(torch.load(os.path.join(model_save_path, model_name))) # Load best model
     test_accuracy, test_precision, test_recall, test_f1 = eval(model, tokenizer, test_loader, device)
 
     """ Save results """
