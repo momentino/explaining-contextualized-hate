@@ -1,21 +1,22 @@
 import torch
 from utils.utils import calculate_metrics
 
+from tqdm import tqdm
+
 def eval(model, tokenizer, val_loader):
     model.eval()
 
     all_predictions = []
     all_labels = []
     with torch.no_grad():
-        for inputs, labels in val_loader:
+        for inputs, labels in tqdm(val_loader):
             """ 
                 We need to consider two separate cases: the one where the context is absent and the one where it is present.
                 When we have the context, we need to concatenate them together and we use the special method encode_plus
             """
-            if (len(inputs) == 0):
-                tokenized_inputs = tokenizer.encode_plus(
-                    inputs[0],  # target
-                    inputs[1],  # context
+            if (len(inputs) > 0):
+                tokenized_inputs = tokenizer.batch_encode_plus(
+                    batch_text_or_text_pairs=[(t, c) for t, c in zip(inputs[0], inputs[1])],  # target
                     add_special_tokens=True,  # Add [CLS] and [SEP]
                     return_tensors='pt',  # Return PyTorch tensors
                     padding='longest',  # Pad to the maximum length

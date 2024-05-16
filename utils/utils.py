@@ -1,3 +1,4 @@
+import torch
 import torch.optim as optim
 import torch.nn as nn
 
@@ -27,8 +28,8 @@ def jsonl_to_df(file, random_seed):
 
 def calculate_metrics(predictions, targets):
     # Convert predictions and targets to numpy arrays
-    predictions = predictions.cpu().numpy()
-    targets = targets.cpu().numpy()
+    predictions = torch.tensor(predictions).cpu().numpy()
+    targets = torch.tensor(targets).cpu().numpy()
 
     # Calculate accuracy
     accuracy = (predictions == targets).mean()

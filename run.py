@@ -5,7 +5,7 @@ import argparse
 import os
 import yaml
 
-from model.model import RoBERTaWrapper
+from model.model import RobertaForToxicClassification
 from utils.utils import get_optimizer, jsonl_to_df, get_loss_function
 from data.dataset import ToxicLangDataset
 from train.train import train
@@ -43,7 +43,7 @@ def main(args):
     device = torch.device(config['device'])
 
     """ Model """
-    model = RoBERTaWrapper(config['model'])
+    model = RobertaForToxicClassification(config['model'],config['n_class_'+dataset_name])
 
     """ Optimizer """
     optimizer_name = config['optimizer']
@@ -75,7 +75,7 @@ def main(args):
     """ Define name of model """
     model_name = "yu22_" + s if "yu" in dataset_path else "pav20_" + s
     """ Train """
-    train(model, tokenizer, train_loader, val_loader, config['training_epochs'],optimizer, criterion, config['model_save_path'], save_model_with_name=model_name)
+    train(model, tokenizer, train_loader, val_loader, config['training_epochs'],optimizer, criterion, config['model_save_path'])
 
     """ Evaluate """
     model.load_state_dict(torch.load(os.path.join(config['model_save_path'], model_name))) # Load best model

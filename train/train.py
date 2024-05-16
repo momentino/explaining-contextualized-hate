@@ -1,5 +1,6 @@
 import torch
 import copy
+from tqdm import tqdm
 
 from utils.utils import calculate_metrics
 from eval.eval import eval
@@ -15,15 +16,14 @@ def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, cri
         running_loss = 0.0
 
 
-        for i, (inputs, labels) in enumerate(train_loader):
+        for inputs, labels in tqdm(train_loader):
             """ 
                 We need to consider two separate cases: the one where the context is absent and the one where it is present.
                 When we have the context, we need to concatenate them together and we use the special method encode_plus
             """
-            if(len(inputs)== 0):
-                tokenized_inputs = tokenizer.encode_plus(
-                    inputs[0], # target
-                    inputs[1], #context
+            if(len(inputs)>0):
+                tokenized_inputs = tokenizer.batch_encode_plus(
+                    batch_text_or_text_pairs=[(t,c) for t,c in zip(inputs[0],inputs[1])], # target
                     add_special_tokens=True,  # Add [CLS] and [SEP]
                     return_tensors='pt',  # Return PyTorch tensors
                     padding='longest',  # Pad to the maximum length

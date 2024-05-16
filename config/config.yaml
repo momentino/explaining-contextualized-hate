@@ -7,6 +7,10 @@ max_len: 512
 dropout: 0.2
 head_hidden_size: 400
 
+# Num classes for the two datasets
+n_class_pavlopoulos20: 2
+n_class_yu22: 3
+
 # Device settings
 device: cuda:0
 

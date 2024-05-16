@@ -49,10 +49,10 @@ class ToxicLangDataset(Dataset):
         return len(self.labels)
 
     def __getitem__(self, idx):
-        text = [self.texts[idx]]
         if(self.context):
-            context = self.contexts[idx]
-            text = [text,context]
+            text = [self.texts[idx],self.contexts[idx]]
+        else:
+            text = [self.texts[idx]]
         label = self.labels[idx]
-        label = torch.tensor(label)
+        label = torch.tensor(int(label))
         return text, label
