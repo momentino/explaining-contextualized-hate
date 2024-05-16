@@ -63,7 +63,6 @@ def main(args):
     """ Tokenizer """
     tokenizer = AutoTokenizer.from_pretrained(config['model'])
 
-
     """ Dataset preparation """
     dataset_path = dataset_file_path
     dataset_df = jsonl_to_df(dataset_path, s)
@@ -72,9 +71,9 @@ def main(args):
     val_dataset = ToxicLangDataset(dataset_df=dataset_df, split='val', random_seed=s, context=context, dataset_name=dataset_name)
     test_dataset = ToxicLangDataset(dataset_df=dataset_df, split='test', random_seed=s, context=context, dataset_name=dataset_name)
 
-    train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=config['batch_size'], shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=config['batch_size'])
+    val_loader = DataLoader(val_dataset, batch_size=config['batch_size'])
+    test_loader = DataLoader(test_dataset, batch_size=config['batch_size'])
 
     """ Define name of model """
     model_name = "yu22_" + s if "yu" in dataset_path else "pav20_" + s

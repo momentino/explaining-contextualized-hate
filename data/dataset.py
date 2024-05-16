@@ -33,18 +33,6 @@ class ToxicLangDataset(Dataset):
         self.texts = self.df['target'][split_separators[split][0]:split_separators[split][1]].to_list()
         self.labels = self.df['label'][split_separators[split][0]:split_separators[split][1]].to_list()
 
-
-
-    def _jsonl_to_df(self, file, random_seed):
-        data = []
-        with open(file) as f:
-            for line in f:
-                data.append(json.loads(line))
-
-        df = pd.json_normalize(data)
-        df = shuffle(df, random_state=random_seed)
-        return df
-
     def __len__(self):
         return len(self.labels)
 
