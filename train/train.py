@@ -52,16 +52,16 @@ def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, cri
         """ Evaluate training """
         print(f'Epoch [{epoch + 1}/{num_epochs}], '
               f'Training Loss: {train_loss:.4f}, '
-              f'Training Accuracy: {train_accuracy:.2f}, '
-              f'Training Precision: {train_precision:.2f}, '
-              f'Training Recall: {train_recall:.2f}, '
-              f'Training F1: {train_f1:.2f}, ')
+              f'Training Accuracy: {train_accuracy:.2f}')
+
         print(" Wait for training...")
         """ Validation """
         val_accuracy, val_precision, val_recall, val_f1 = eval(model,tokenizer, val_loader, device)
         print(f'Epoch [{epoch + 1}/{num_epochs}], '
-              f'Training Loss: {train_loss:.4f}, '
-              f'Training Accuracy: {train_accuracy:.2f}')
+              f'Validation Accuracy: {val_accuracy:.2f}, '
+              f'Validation Precision: {val_precision:.2f}, '
+              f'Validation Recall: {val_recall:.2f}, '
+              f'Validation F1: {val_f1:.2f}, ')
 
         # Save the model if validation F1 improves
         if val_f1 > best_val_f1:
