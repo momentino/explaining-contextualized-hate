@@ -18,7 +18,7 @@ device: cuda:0
 seed: [42,55,78,251,363,488, 566, 723, 122, 1896]
 
 # Training settings
-batch_size: 8
+batch_size: 64
 training_epochs: 20
 cv_splits: 5
 
@@ -26,7 +26,7 @@ cv_splits: 5
 # Optimizer settings
 optimizer: Adam
 #lr: 0.000003
-lr: 0.00002
+lr: 0.00001
 #lr: 0.001 #0.001
 weight_decay: 0.0001 #0.0001
 
