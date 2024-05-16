@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 from utils.utils import calculate_metrics
 from eval.eval import eval
-def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, criterion, model_save_path):
+def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, criterion, model_save_path, device):
 
     best_val_f1 = 0.0
 
@@ -30,6 +30,8 @@ def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, cri
                 )
             else:
                 tokenized_inputs = tokenizer(inputs[0], padding='longest', return_tensors='pt')
+            tokenized_inputs = tokenized_inputs.to(device)
+            labels = labels.to(device)
             outputs = model(**tokenized_inputs)
             loss = criterion(outputs, labels)
 
@@ -50,16 +52,16 @@ def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, cri
         """ Evaluate training """
         print(f'Epoch [{epoch + 1}/{num_epochs}], '
               f'Training Loss: {train_loss:.4f}, '
-              f'Training Accuracy: {train_accuracy:.2f}%'
-              f'Training Precision: {train_precision:.2f}%'
-              f'Training Recall: {train_recall:.2f}%'
-              f'Training F1: {train_f1:.2f}%')
+              f'Training Accuracy: {train_accuracy:.2f}, '
+              f'Training Precision: {train_precision:.2f}, '
+              f'Training Recall: {train_recall:.2f}, '
+              f'Training F1: {train_f1:.2f}, ')
         print(" Wait for training...")
         """ Validation """
-        val_accuracy, val_precision, val_recall, val_f1 = eval(model, val_loader)
+        val_accuracy, val_precision, val_recall, val_f1 = eval(model,tokenizer, val_loader, device)
         print(f'Epoch [{epoch + 1}/{num_epochs}], '
               f'Training Loss: {train_loss:.4f}, '
-              f'Training Accuracy: {train_accuracy:.2f}%')
+              f'Training Accuracy: {train_accuracy:.2f}')
 
         # Save the model if validation F1 improves
         if val_f1 > best_val_f1:

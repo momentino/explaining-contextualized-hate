@@ -3,7 +3,7 @@ from utils.utils import calculate_metrics
 
 from tqdm import tqdm
 
-def eval(model, tokenizer, val_loader):
+def eval(model, tokenizer, val_loader, device):
     model.eval()
 
     all_predictions = []
@@ -23,6 +23,8 @@ def eval(model, tokenizer, val_loader):
                 )
             else:
                 tokenized_inputs = tokenizer(inputs[0], padding='longest', return_tensors='pt')
+            tokenized_inputs = tokenized_inputs.to(device)
+            labels = labels.to(device)
             outputs = model(**tokenized_inputs)
             _, predicted = torch.max(outputs.data, 1)
             all_labels.extend(labels)
@@ -30,9 +32,4 @@ def eval(model, tokenizer, val_loader):
 
     val_accuracy, val_precision, val_recall, val_f1 = calculate_metrics(all_predictions, all_labels)
 
-    return {
-        'accuracy': val_accuracy,
-        'precision': val_precision,
-        'recall': val_recall,
-        'f1_score': val_f1
-    }
+    return val_accuracy, val_precision, val_recall, val_f1

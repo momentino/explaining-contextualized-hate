@@ -11,7 +11,7 @@ class ToxicLangDataset(Dataset):
     def __init__(self, dataset_df, split, random_seed, context, dataset_name):
         self.split = split
         self.random_seed = random_seed  # seed that should be selected randomly. We should perform 10 different tests with 10 seeds and average.
-        self.df = dataset_df
+        self.df = dataset_df[:100]
 
         self.context = context
 

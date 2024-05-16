@@ -44,6 +44,7 @@ def main(args):
 
     """ Model """
     model = RobertaForToxicClassification(config['model'],config['n_class_'+dataset_name])
+    model = model.to(device)
 
     """ Optimizer """
     optimizer_name = config['optimizer']
@@ -75,16 +76,16 @@ def main(args):
     """ Define name of model """
     model_name = "yu22_" + s if "yu" in dataset_path else "pav20_" + s
     """ Train """
-    train(model, tokenizer, train_loader, val_loader, config['training_epochs'],optimizer, criterion, config['model_save_path'])
+    train(model, tokenizer, train_loader, val_loader, config['training_epochs'],optimizer, criterion, os.path.join(config['model_save_path'], model_name), device)
 
     """ Evaluate """
     model.load_state_dict(torch.load(os.path.join(config['model_save_path'], model_name))) # Load best model
-    test_accuracy, test_precision, test_recall, test_f1 = eval(model, tokenizer, test_loader)
+    test_accuracy, test_precision, test_recall, test_f1 = eval(model, tokenizer, test_loader, device)
 
     """ Save results """
     with open(results_file, mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([dataset_name, model_name, s, test_accuracy, test_precision, test_recall, test_f1])
+        writer.writerow([dataset_name, context,model_name, s, test_accuracy, test_precision, test_recall, test_f1])
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Explaining Contextualized Hate', parents=[get_args_parser()])
