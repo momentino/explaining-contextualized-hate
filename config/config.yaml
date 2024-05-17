@@ -13,7 +13,7 @@ training_epochs: 20
 
 
 # Optimizer settings
-optimizer: AdamW
+optimizer: Adam
 #lr: 0.000003
 #lr: 0.000001
 lr: 0.00001
