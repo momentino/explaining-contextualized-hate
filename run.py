@@ -79,7 +79,7 @@ def main(args):
     """ Define name of model """
     model_name = "yu22_" + s if "yu" in dataset_path else "pav20_" + s
     """ Train """
-    train(model, tokenizer, test_loader, val_loader, config['training_epochs'],optimizer, criterion, os.path.join(model_save_path, model_name), device)
+    train(model, tokenizer, train_loader, val_loader, config['training_epochs'],optimizer, criterion, os.path.join(model_save_path, model_name), device)
 
     """ Evaluate """
     model.load_state_dict(torch.load(os.path.join(model_save_path, model_name))) # Load best model
