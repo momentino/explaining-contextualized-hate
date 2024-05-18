@@ -20,9 +20,10 @@ def eval(model, tokenizer, val_loader, device):
                     add_special_tokens=True,  # Add [CLS] and [SEP]
                     return_tensors='pt',  # Return PyTorch tensors
                     padding='longest',  # Pad to the maximum length
+                    max_length=512
                 )
             else:
-                tokenized_inputs = tokenizer(inputs[0], padding='longest', return_tensors='pt')
+                tokenized_inputs = tokenizer(inputs[0], padding='longest', return_tensors='pt',max_length=512)
             tokenized_inputs = tokenized_inputs.to(device)
             labels = labels.to(device)
             outputs = model(**tokenized_inputs)
