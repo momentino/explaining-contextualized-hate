@@ -47,7 +47,7 @@ def dataset_to_jsonl(df, split, path):
         'test': (val_limit, len(df))
     }
     selected_rows = df.iloc[split_separators[split][0]:split_separators[split][1]]
-
+    print(selected_rows)
     with open(path, 'w') as jsonl_file:
         for index, row in selected_rows.iterrows():
             row_dict = row.to_dict()
