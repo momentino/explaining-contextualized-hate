@@ -40,5 +40,6 @@ def calculate_metrics(predictions, targets):
 """ Function that converts Pytorch Dataset objects back to jsonl files """
 def dataset_to_jsonl(dataset, jsonl_file_path):
     with open(jsonl_file_path, 'w') as jsonl_file:
-        for data_point in dataset:
-            jsonl_file.write(json.dumps(data_point) + '\n')
+        for i in range(dataset.__len__()):
+            sample = dataset.getsample(i)
+            jsonl_file.write(json.dumps(sample) + '\n')

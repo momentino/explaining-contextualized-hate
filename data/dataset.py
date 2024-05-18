@@ -36,6 +36,11 @@ class ToxicLangDataset(Dataset):
     def __len__(self):
         return len(self.labels)
 
+    def getsample(self,idx):
+        sample = self.df[idx]
+        sample = sample.to_dict()
+        row_json = pd.Series(sample, index=False).to_json()
+        return row_json
     def __getitem__(self, idx):
         if(self.context):
             text = [self.texts[idx],self.contexts[idx]]
