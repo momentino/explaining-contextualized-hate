@@ -9,7 +9,6 @@ class RobertaForToxicClassification(nn.Module):
         self.classification_head = nn.Linear(self.roberta.config.hidden_size, num_class)
 
     def forward(self, input_ids,attention_mask):
-        print(" TOKENIZED INPUTS ", input_ids.shape, " ",attention_mask.shape)
         roberta_outputs = self.roberta(input_ids=input_ids, attention_mask=attention_mask)
         pooler_output = roberta_outputs.pooler_output
         output = self.classification_head(pooler_output)
