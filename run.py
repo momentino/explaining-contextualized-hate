@@ -98,8 +98,8 @@ def main(args):
     if not (df['f1'] > test_f1).any():
 
         dataset_to_jsonl(df, 'train', os.path.join('datasets/'+dataset_name+'/data/best_run_splits','train.jsonl'))
-        dataset_to_jsonl(val_dataset, os.path.join('datasets/'+dataset_name+'/data/best_run_splits','val.jsonl'))
-        dataset_to_jsonl(test_dataset, os.path.join('datasets/'+dataset_name+'/data/best_run_splits','test.jsonl'))
+        dataset_to_jsonl(val_dataset, 'val', os.path.join('datasets/'+dataset_name+'/data/best_run_splits','val.jsonl'))
+        dataset_to_jsonl(test_dataset, 'test', os.path.join('datasets/'+dataset_name+'/data/best_run_splits','test.jsonl'))
     """ Save results """
     results_row = [dataset_name, context,model_name, s, test_accuracy, test_precision, test_recall, test_f1]
     df = pd.DataFrame([results_row],
