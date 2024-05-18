@@ -46,6 +46,7 @@ def dataset_to_jsonl(df, split, path):
         'val': (train_limit, val_limit),
         'test': (val_limit, len(df))
     }
+    print(" SPLIT SEPARATORS", split_separators)
     selected_rows = df.iloc[split_separators[split][0]:split_separators[split][1]]
     print(selected_rows)
     with open(path, 'w') as jsonl_file:
