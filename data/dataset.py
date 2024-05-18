@@ -31,7 +31,6 @@ class ToxicLangDataset(Dataset):
             if (dataset_name == "pav20"):
                 self.df = self.df[self.df['context'] == '']  # take only those where context is not
         self.texts = self.df['target'][split_separators[split][0]:split_separators[split][1]].to_list()
-        print(self.texts)
         self.labels = self.df['label'][split_separators[split][0]:split_separators[split][1]].to_list()
 
     def __len__(self):
