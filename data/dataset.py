@@ -39,7 +39,7 @@ class ToxicLangDataset(Dataset):
     def getsample(self,idx):
         sample = self.df.iloc[idx]
         sample = sample.to_dict()
-        row_json = pd.Series(sample, index=False).to_json()
+        row_json = pd.Series(sample).to_json()
         return row_json
     def __getitem__(self, idx):
         if(self.context):
