@@ -27,20 +27,18 @@ def jsonl_to_df(file, random_seed):
     return df
 
 def calculate_metrics(predictions, targets):
-    # Convert predictions and targets to numpy arrays
     predictions = torch.tensor(predictions).cpu().numpy()
     targets = torch.tensor(targets).cpu().numpy()
 
-    # Calculate accuracy
     accuracy = (predictions == targets).mean()
-
-    # Calculate precision
     precision = precision_score(targets, predictions, average='weighted')
-
-    # Calculate recall
     recall = recall_score(targets, predictions, average='weighted')
-
-    # Calculate F1 score
     f1 = f1_score(targets, predictions, average='weighted')
 
     return accuracy, precision, recall, f1
+
+""" Function that converts Pytorch Dataset objects back to jsonl files """
+def dataset_to_jsonl(dataset, jsonl_file_path):
+    with open(jsonl_file_path, 'w') as jsonl_file:
+        for data_point in dataset:
+            jsonl_file.write(json.dumps(data_point) + '\n')
