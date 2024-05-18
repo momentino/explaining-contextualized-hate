@@ -32,6 +32,7 @@ def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, cri
             else:
                 tokenized_inputs = tokenizer(inputs[0], padding='longest', return_tensors='pt', max_length=512)
             tokenized_inputs = tokenized_inputs.to(device)
+            print(" TOKENIZED INPUTS ",tokenized_inputs.shape)
             labels = labels.to(device)
             outputs = model(**tokenized_inputs)
             loss = criterion(outputs, labels)
