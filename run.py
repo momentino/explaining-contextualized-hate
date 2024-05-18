@@ -84,6 +84,10 @@ def main(args):
     """ Evaluate """
     model.load_state_dict(torch.load(os.path.join(model_save_path, model_name))) # Load best model
     test_accuracy, test_precision, test_recall, test_f1 = eval(model, tokenizer, test_loader, device)
+    print(f'Test Accuracy: {test_accuracy:.2f}, '
+          f'Test Precision: {test_precision:.2f}, '
+          f'Test Recall: {test_recall:.2f}, '
+          f'Test F1: {test_f1:.2f}, ')
 
     """ 
         Read the results, and if the current ones are the best, save the train,test,split for the explanation part
