@@ -37,7 +37,7 @@ def main(args):
     s = args.random_seed
     results_file = config['results_path']
     dataset_file_path = args.dataset_file_path
-    context = args.context
+    context = True if args.context == "True" else False
 
     dataset_name = "yu22" if "yu" in dataset_file_path else "pavlopoulos20"
 
@@ -103,10 +103,9 @@ def main(args):
         dataset_to_jsonl(dataset_df, 'test', os.path.join('datasets/'+dataset_name+'/data/best_run_splits'+context_path,'test.jsonl'))
     """ Save results """
     results_row = [dataset_name, context,model_name, s, test_accuracy, test_precision, test_recall, test_f1]
-    df = pd.DataFrame([results_row],
-                      columns=['dataset', 'context', 'model_name', 'seed', 'accuracy', 'precision', 'recall', 'f1'])
 
-    df.to_csv(results_file, index=False)
+    combined_data = pd.concat([df, results_row], ignore_index=True)
+    combined_data.to_csv(results_file, index=False)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Explaining Contextualized Hate', parents=[get_args_parser()])
