@@ -20,7 +20,7 @@ def get_args_parser():
     parser = argparse.ArgumentParser('', add_help=False)
     parser.add_argument('--dataset_file_path', type=str)
     parser.add_argument('--random_seed', type=str)
-    parser.add_argument('--context', type=bool)
+    parser.add_argument('--context', action='store_true')
 
     return parser
 
@@ -37,7 +37,7 @@ def main(args):
     s = args.random_seed
     results_file = config['results_path']
     dataset_file_path = args.dataset_file_path
-    context = True if args.context == "True" else False
+    context = True if args.context else False
 
     dataset_name = "yu22" if "yu" in dataset_file_path else "pavlopoulos20"
 
