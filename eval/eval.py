@@ -14,7 +14,7 @@ def eval(model, tokenizer, val_loader, device):
                 We need to consider two separate cases: the one where the context is absent and the one where it is present.
                 When we have the context, we need to concatenate them together and we use the special method encode_plus
             """
-            if (len(inputs) > 0):
+            if (len(inputs) > 1):
                 tokenized_inputs = tokenizer.batch_encode_plus(
                     batch_text_or_text_pairs=[(t, c) for t, c in zip(inputs[0], inputs[1])],  # target
                     add_special_tokens=True,  # Add [CLS] and [SEP]
