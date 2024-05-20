@@ -98,9 +98,9 @@ def main(args):
     """ We need to see if it is the best among the one in the same category. We don't want to compare contextual with non contextual models' results. """
     if not (filtered_df['f1'] > test_f1).any():
         context_path = 'context' if context else 'no_context'
-        dataset_to_jsonl(dataset_df, 'train', os.path.join('datasets/'+dataset_name+'/data/'+'/data/best_run_splits'+context_path,'train.jsonl'))
-        dataset_to_jsonl(dataset_df, 'val', os.path.join('datasets/'+dataset_name+'/data/'+'/data/best_run_splits'+context_path,'val.jsonl'))
-        dataset_to_jsonl(dataset_df, 'test', os.path.join('datasets/'+dataset_name+'/data/best_run_splits'+context_path,'test.jsonl'))
+        dataset_to_jsonl(dataset_df, 'train', os.path.join('datasets/'+dataset_name+'/data/'+'/data/best_run_splits/'+context_path,'train.jsonl'))
+        dataset_to_jsonl(dataset_df, 'val', os.path.join('datasets/'+dataset_name+'/data/'+'/data/best_run_splits/'+context_path,'val.jsonl'))
+        dataset_to_jsonl(dataset_df, 'test', os.path.join('datasets/'+dataset_name+'/data/best_run_splits/'+context_path,'test.jsonl'))
     """ Save results """
     results_row = [dataset_name, context,model_name, s, test_accuracy, test_precision, test_recall, test_f1]
 
