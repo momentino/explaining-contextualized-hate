@@ -38,7 +38,7 @@ class ToxicLangDataset(Dataset):
 
     def __getitem__(self, idx):
         if(self.context):
-            text = [self.texts[idx],self.contexts[idx]]
+            text = [self.contexts[idx],self.texts[idx]]
         else:
             text = [self.texts[idx]]
         label = self.labels[idx]
