@@ -9,7 +9,7 @@ device: cuda:0
 
 # Training settings
 batch_size: 16
-training_epochs: 20
+training_epochs: 1
 
 
 # Optimizer settings
