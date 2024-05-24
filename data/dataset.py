@@ -23,14 +23,13 @@ class ToxicLangDataset(Dataset):
             'val': (train_limit, val_limit),
             'test': (val_limit, len(self.df))
         }
-        print(self.df['context'])
         if(context):
             if(dataset_name=="pav20"):
-                self.df = self.df[self.df['context'] != None] #take only those where context is not
+                self.df = self.df[not self.df['context'].isna()] #take only those where context is not
             self.contexts = self.df['context'][split_separators[split][0]:split_separators[split][1]].to_list()
         else:
             if (dataset_name == "pav20"):
-                self.df = self.df[self.df['context'] == None]  # take only those where context is not
+                self.df = self.df[self.df['context'].isna()]  # take only those where context is not
         self.texts = self.df['target'][split_separators[split][0]:split_separators[split][1]].to_list()
         self.labels = self.df['label'][split_separators[split][0]:split_separators[split][1]].to_list()
 
