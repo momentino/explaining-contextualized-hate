@@ -4,7 +4,7 @@ model: roberta-base
 n_class_pavlopoulos20: 2
 n_class_yu22: 3
 class_names_pavlopoulos20: ["not-hate","hate"]
-class_names_yu22: ["hate","counter-hate","neutral"]
+class_names_yu22: ["hate","neutral","counter-hate"]
 
 # Device settings
 device: cuda:0

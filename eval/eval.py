@@ -1,15 +1,23 @@
 import torch
 from utils.utils import calculate_metrics
 
-from tqdm import tqdm
+from model.model import RobertaForToxicClassification
+from transformers import AutoTokenizer
 
-def eval(model, tokenizer, val_loader, device):
+from tqdm import tqdm
+import os
+from utils.utils import load_config
+
+
+config = load_config('/home/filippo/PycharmProjects/explaining-contextualized-hate/config', 'config.yaml') # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
+
+def eval(model, tokenizer, loader, device):
     model.eval()
 
     all_predictions = []
     all_labels = []
     with torch.no_grad():
-        for inputs, labels in tqdm(val_loader):
+        for inputs, labels in tqdm(loader):
             """ 
                 We need to consider two separate cases: the one where the context is absent and the one where it is present.
                 When we have the context, we need to concatenate them together and we use the special method encode_plus
@@ -35,3 +43,14 @@ def eval(model, tokenizer, val_loader, device):
     val_accuracy, val_precision, val_recall, val_f1 = calculate_metrics(all_predictions, all_labels)
 
     return val_accuracy, val_precision, val_recall, val_f1
+
+def predict_proba(input, model, tokenizer, device):
+    model.eval()
+    with torch.no_grad():
+        tokenized_inputs = tokenizer(input, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)
+        tokenized_inputs = tokenized_inputs.to(device)
+        outputs = model(**tokenized_inputs)
+        proba = outputs.logits.softmax(dim=-1).detach().numpy()
+
+
+    return proba
