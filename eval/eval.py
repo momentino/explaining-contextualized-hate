@@ -9,8 +9,6 @@ import os
 from utils.utils import load_config
 
 
-config = load_config('/home/filippo/PycharmProjects/explaining-contextualized-hate/config', 'config.yaml') # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
-
 def eval(model, tokenizer, loader, device):
     model.eval()
 
