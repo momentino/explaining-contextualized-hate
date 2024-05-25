@@ -18,7 +18,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, to
         pred_id = np.argmax(exp.predict_proba)
         results["classification"] = pred_id
 
-        lime_score = [0] * len(input.split(" "))
+        lime_score = [0] * len(text.split(" "))
 
         explanation = exp.as_map()[pred_id]
         for exp in explanation:
@@ -28,7 +28,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, to
 
 
         final_explanation = [0]
-        tokens = input.split(" ")
+        tokens = text.split(" ")
         for i in range(len(tokens)):
             temp_tokens = tokenizer.encode(tokens[i], add_special_tokens=False)
             for j in range(len(temp_tokens)):
