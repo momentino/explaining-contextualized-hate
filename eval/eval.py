@@ -46,7 +46,7 @@ def predict_proba(input, model, tokenizer, device):
     model.eval()
     with torch.no_grad():
         tokenized_inputs = tokenizer(input, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)
-        print(" IN PREDICT PROBA ", len(tokenized_inputs['input_ids'][0]), tokenized_inputs['input_ids'][0])
+        #print(" IN PREDICT PROBA ", len(tokenized_inputs['input_ids'][0]), tokenized_inputs['input_ids'][0])
 
         #print(" IN PREDICT PROBA ", tokenizer.decode(tokenized_inputs['input_ids'][0]))
         tokenized_inputs = tokenized_inputs.to(device)
