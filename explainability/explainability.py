@@ -14,7 +14,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
         exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=10, num_samples=500)
 
         pred_id = np.argmax(exp.predict_proba)
-        #print("PRED ID ", pred_id)
+        print("PRED ID ", pred_id," ",exp.predict_proba)
         #print(" TRUE LABEL ",label)
         #results["classification"] = pred_id
         #print(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'])
