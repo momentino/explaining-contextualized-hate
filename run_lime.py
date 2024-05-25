@@ -62,6 +62,7 @@ def main(args):
 
 
     test_dataset = ToxicLangDataset(dataset_df=dataset_df, split='test', context=context, dataset_name=dataset_name)
+    print(test_dataset.__len__())
 
     test_loader = DataLoader(test_dataset, batch_size=1)
 
