@@ -60,15 +60,15 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
     index = 0
     for input, label in tqdm(dataloader):
         if(len(input) > 1):
-            original_text = input[0][0] + '[SEP]' + input[1][0]
+            original_text = input[0][0] + '</s><s>' + input[1][0]
         else:
             original_text = input[0][0]
         tokens = tokenizer(original_text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0]
         print(" TOKENS ", tokens)
         print(" RATIONALES ",rationales[index])
-        text_without_rationales = [t1 for t1, t2 in zip(tokens, rationales[index]) if t2 == 0 or t1 == '[SEP]']
+        text_without_rationales = [t1 for t1, t2 in zip(tokens, rationales[index]) if t2 == 0 or t1 == '<s>' or t1 == '</s>']
         text_without_rationales = tokenizer.decode(text_without_rationales)
-        only_rationales = [t1 for t1, t2 in zip(tokens, rationales[index]) if t2 != 0 or t1 == '[SEP]']
+        only_rationales = [t1 for t1, t2 in zip(tokens, rationales[index]) if t2 != 0 or t1 == '<s>' or t1 == '</s>']
         only_rationales = tokenizer.decode(only_rationales)
         print(" RATIONALES ",rationales)
         print(" ORIGINAL ", original_text)

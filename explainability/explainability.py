@@ -8,7 +8,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
     res_list = []
     for input, label in tqdm(dataloader):
         if(len(input) > 1):
-            text = input[0][0] + '[SEP]' + input[1][0]
+            text = input[0][0] + '</s><s>' + input[1][0]
         else:
             text = input[0][0]
         exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=6, num_samples=500)
