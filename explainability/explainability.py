@@ -16,7 +16,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
         pred_id = np.argmax(exp.predict_proba)
         #print("PRED ID ", pred_id)
         #print(" TRUE LABEL ",label)
-        results["classification"] = pred_id
+        #results["classification"] = pred_id
         #print(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'])
         lime_score = [0] * len(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0])
         #print(" LIME SCORE LEN ",len(lime_score))
@@ -46,7 +46,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
         for ind in topk_indicies:
             hard_rationales.append({'end_token': ind + 1, 'start_token': ind})
         print(" HARD RATIONALES ",hard_rationales)"""
-        results["lime_score"] = lime_score
-        res_list.append(results)
+        #results["lime_score"] = lime_score
+        res_list.append(lime_score)
 
     return res_list
