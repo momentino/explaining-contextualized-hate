@@ -11,7 +11,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
             text = input[0][0] + '</s><s>' + input[1][0]
         else:
             text = input[0][0]
-        exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=10, num_samples=2000)
+        exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=10, num_samples=500)
 
         pred_id = np.argmax(exp.predict_proba)
         #print(" TRUE LABEL ",label)
