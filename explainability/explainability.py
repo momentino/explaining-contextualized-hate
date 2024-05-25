@@ -17,8 +17,8 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
         print("PRED ID ", pred_id)
         print(" TRUE LABEL ",label)
         results["classification"] = pred_id
-
-        lime_score = [0] * len(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True))
+        print(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'])
+        lime_score = [0] * len(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'])
         print(" LIME SCORE LEN ",len(lime_score))
         explanation = exp.as_map()[pred_id]
         print(" EXP LEN ",len(explanation))
