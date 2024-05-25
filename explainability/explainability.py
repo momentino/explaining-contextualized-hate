@@ -20,8 +20,9 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
 
         lime_score = [0] * len(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True))
         print(" LIME SCORE LEN ",len(lime_score))
-        print(" EXP LEN ",len(explanation))
         explanation = exp.as_map()[pred_id]
+        print(" EXP LEN ",len(explanation))
+
         for exp in explanation:
             if (exp[1] > 0):
                 print(exp)
