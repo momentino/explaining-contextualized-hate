@@ -6,7 +6,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, to
 
     results = {}
     res_list = []
-    for input, _ in tqdm(dataloader):
+    for input, label in tqdm(dataloader):
         if(len(input) > 1):
             text = input[0][0] + '[SEP]' + input[1][0]
         else:
@@ -16,6 +16,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, to
 
         pred_id = np.argmax(exp.predict_proba)
         print("PRED ID ", pred_id)
+        print(" TRUE LABEL ",label)
         results["classification"] = pred_id
 
         lime_score = [0] * len(text.split(" "))
