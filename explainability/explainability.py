@@ -22,6 +22,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, to
 
         explanation = exp.as_map()[pred_id]
         for exp in explanation:
+            print("EXP ",exp)
             if (exp[1] > 0):
                 lime_score[exp[0]] = exp[1]
 
