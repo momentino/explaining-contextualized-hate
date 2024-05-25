@@ -14,18 +14,18 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
         exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=6, num_samples=2000)
 
         pred_id = np.argmax(exp.predict_proba)
-        print("PRED ID ", pred_id)
-        print(" TRUE LABEL ",label)
+        #print("PRED ID ", pred_id)
+        #print(" TRUE LABEL ",label)
         results["classification"] = pred_id
-        print(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'])
+        #print(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'])
         lime_score = [0] * len(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0])
-        print(" LIME SCORE LEN ",len(lime_score))
+        #print(" LIME SCORE LEN ",len(lime_score))
         explanation = exp.as_map()[pred_id]
-        print(" EXP LEN ",len(explanation))
+        #print(" EXP LEN ",len(explanation))
 
         for exp in explanation:
             if (exp[1] > 0):
-                print(exp)
+                #print(exp)
                 lime_score[exp[0]] = exp[1]
 
 
