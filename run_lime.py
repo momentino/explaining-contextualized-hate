@@ -61,7 +61,7 @@ def main(args):
     dataset_df = jsonl_to_df(dataset_path)
 
 
-    dataset = ToxicLangDataset(dataset_df=dataset_df[:10], split='no_split', context=context, dataset_name=dataset_name)
+    dataset = ToxicLangDataset(dataset_df=dataset_df, split='no_split', context=context, dataset_name=dataset_name)
 
     loader = DataLoader(dataset, batch_size=1)
 
@@ -83,7 +83,7 @@ def main(args):
     results_row = [dataset_name, context, model_name, 'LIME',comprehensiveness,sufficiency]
 
     combined_data = pd.concat([df, pd.DataFrame([results_row],
-                                                columns=["dataset","context","model_name","exp_method","comprehensiveness","sufficiency"])], ignore_index=True)
+                                                columns=["dataset","context","exp_method","comprehensiveness","sufficiency"])], ignore_index=True)
     combined_data.to_csv(results_file, index=False)
 
 
