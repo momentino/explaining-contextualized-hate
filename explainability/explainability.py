@@ -7,15 +7,15 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, to
     results = {}
     res_list = []
     for input, _ in tqdm(dataloader):
-        print(input)
-        if(len(input[0]) > 1):
+        if(len(input) > 1):
             text = input[0][0] + '[SEP]' + input[0][1]
         else:
             text = input[0][0]
-
-        exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=20, num_samples=2000)
+        print(text)
+        exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=500, num_samples=2000)
 
         pred_id = np.argmax(exp.predict_proba)
+        print("PRED ID ", pred_id)
         results["classification"] = pred_id
 
         lime_score = [0] * len(text.split(" "))
