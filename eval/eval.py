@@ -63,10 +63,12 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
             original_text = input[0][0] + '[SEP]' + input[1][0]
         else:
             original_text = input[0][0]
-        space_tokenized_text = original_text.split(" ")
-        text_without_rationales = [t1 for t1, t2 in zip(space_tokenized_text, rationales[index]) if t2 == 0 or t1 == '[SEP]']
+        tokens = tokenizer(original_text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0]
+        print(" TOKENS ", tokens)
+        print(" RATIONALES ",rationales[index])
+        text_without_rationales = [t1 for t1, t2 in zip(tokens, rationales[index]) if t2 == 0 or t1 == '[SEP]']
         text_without_rationales = " ".join(text_without_rationales)
-        only_rationales = [t1 for t1, t2 in zip(space_tokenized_text, rationales[index]) if t2 != 0 or t1 == '[SEP]']
+        only_rationales = [t1 for t1, t2 in zip(tokens, rationales[index]) if t2 != 0 or t1 == '[SEP]']
         only_rationales = " ".join(only_rationales)
         print(" RATIONALES ",rationales)
         print(" ORIGINAL ", original_text)
