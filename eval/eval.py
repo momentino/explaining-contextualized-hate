@@ -67,6 +67,8 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
         text_without_rationales = " ".join(text_without_rationales)
         only_rationales = [t1 for t1, t2 in zip(space_tokenized_text, rationales) if t2 != 0 or t1 == '[SEP]']
         only_rationales = " ".join(only_rationales)
+        print(" ORIGINAL ", original_text)
+        print(" NO RATIONALES ", text_without_rationales)
         print(" ONLY RATIONALES ",only_rationales)
 
         original_proba = predict_proba(original_text, model, tokenizer, device)
