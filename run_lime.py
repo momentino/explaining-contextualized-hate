@@ -61,10 +61,9 @@ def main(args):
     dataset_df = jsonl_to_df(dataset_path)
 
 
-    test_dataset = ToxicLangDataset(dataset_df=dataset_df, split='test', context=context, dataset_name=dataset_name)
-    print(test_dataset.__len__())
+    dataset = ToxicLangDataset(dataset_df=dataset_df, split='no_split', context=context, dataset_name=dataset_name)
 
-    test_loader = DataLoader(test_dataset, batch_size=1)
+    test_loader = DataLoader(dataset, batch_size=1)
 
     """ Define name of model """
     model_name = args.saved_model_name

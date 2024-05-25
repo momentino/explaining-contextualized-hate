@@ -20,7 +20,8 @@ class ToxicLangDataset(Dataset):
         split_separators = {
             'train': (1,train_limit),
             'val': (train_limit, val_limit),
-            'test': (val_limit, len(self.df))
+            'test': (val_limit, len(self.df)),
+            'no_split': (1, len(self.df))
         }
         if(context):
             if(dataset_name=="pavlopoulos20"):
