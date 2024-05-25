@@ -26,3 +26,4 @@ model_save_path: weights
 
 # Path of result file
 results_path: results/results.csv
+explainability_results_path: results/explainability_results.csv

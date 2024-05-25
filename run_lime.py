@@ -38,7 +38,7 @@ def main(args):
     config_path = 'config'
     config = load_config(config_path, 'config.yaml') # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
 
-    results_file = config['results_path']
+    results_file = config['explainability_results_path']
     dataset_file_path = args.dataset_file_path
     context = True if args.context else False
 
@@ -76,8 +76,17 @@ def main(args):
     explainer = LimeTextExplainer(class_names=config['class_names_'+dataset_name])
     explanations = explain_lime(loader, explainer, config['n_class_'+dataset_name], model,  tokenizer, device)
     print(explanations)
-    #TODO Define lime function and return metrics
+
     comprehensiveness, sufficiency = eval_explanations(loader, explanations, model, tokenizer, device)
+    df = pd.read_csv(results_file)
+
+    results_row = [dataset_name, context, model_name, 'LIME',comprehensiveness,sufficiency]
+
+    combined_data = pd.concat([df, pd.DataFrame([results_row],
+                                                columns=["dataset", "context", "model_name", "seed", "accuracy",
+                                                         "precision", "recall", "f1"])], ignore_index=True)
+    combined_data.to_csv(results_file, index=False)
+
 
 
 if __name__ == '__main__':
