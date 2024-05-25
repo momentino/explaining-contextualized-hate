@@ -68,9 +68,9 @@ def main(args):
     dataset_path = dataset_file_path
     dataset_df = jsonl_to_df(dataset_path, s)
 
-    train_dataset = ToxicLangDataset(dataset_df=dataset_df, split='train', random_seed=s, context=context, dataset_name=dataset_name)
-    val_dataset = ToxicLangDataset(dataset_df=dataset_df, split='val', random_seed=s, context=context, dataset_name=dataset_name)
-    test_dataset = ToxicLangDataset(dataset_df=dataset_df, split='test', random_seed=s, context=context, dataset_name=dataset_name)
+    train_dataset = ToxicLangDataset(dataset_df=dataset_df, split='train', context=context, dataset_name=dataset_name)
+    val_dataset = ToxicLangDataset(dataset_df=dataset_df, split='val', context=context, dataset_name=dataset_name)
+    test_dataset = ToxicLangDataset(dataset_df=dataset_df, split='test', context=context, dataset_name=dataset_name)
 
     train_loader = DataLoader(train_dataset, batch_size=config['batch_size'])
     val_loader = DataLoader(val_dataset, batch_size=config['batch_size'])
