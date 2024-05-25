@@ -2,7 +2,7 @@ from eval.eval import predict_proba
 from tqdm import tqdm
 import numpy as np
 
-def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, topk=2):
+def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
 
     results = {}
     res_list = []
@@ -11,7 +11,6 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, to
             text = input[0][0] + '[SEP]' + input[1][0]
         else:
             text = input[0][0]
-        print(text)
         exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=6, num_samples=2000)
 
         pred_id = np.argmax(exp.predict_proba)
@@ -38,14 +37,13 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, to
 
 
 
-        topk_indicies = sorted(range(len(lime_score)), key=lambda i: lime_score[i])[-topk:]
+        #topk_indicies = sorted(range(len(lime_score)), key=lambda i: lime_score[i])[-topk:]
 
-        hard_rationales = []
+        """hard_rationales = []
         for ind in topk_indicies:
             hard_rationales.append({'end_token': ind + 1, 'start_token': ind})
-        print(" HARD RATIONALES ",hard_rationales)
-        results["rationales"] = [{"hard_rationale_predictions": hard_rationales,
-                               "soft_rationale_predictions": lime_score}]
+        print(" HARD RATIONALES ",hard_rationales)"""
+        results["lime_score"] = lime_score
         res_list.append(results)
 
     return res_list

@@ -7,7 +7,7 @@ from transformers import AutoTokenizer
 from tqdm import tqdm
 import os
 from utils.utils import load_config
-
+import numpy as np
 
 def eval(model, tokenizer, loader, device):
     model.eval()
@@ -53,3 +53,24 @@ def predict_proba(input, model, tokenizer, device):
 
 
     return proba
+
+def eval_explanations(dataloader, rationales, model, tokenizer, device):
+    comprehensiveness = []
+    sufficiency = []
+    for input, label in tqdm(dataloader):
+        if(len(input) > 1):
+            original_text = input[0][0] + '[SEP]' + input[1][0]
+        else:
+            original_text = input[0][0]
+        space_tokenized_text = original_text.split(" ")
+        text_without_rationales = [t1 for t1, t2 in zip(space_tokenized_text, rationales) if t2 == 0 or t1 == '[SEP]']
+        text_without_rationales = " ".join(text_without_rationales)
+
+        original_proba = predict_proba(original_text, model, tokenizer, device)
+        no_rationales_proba = predict_proba(text_without_rationales, model, tokenizer, device)
+
+        pred_id = np.argmax(original_proba)
+        print(" ORIGINAL PROBA ",original_proba)
+        print(" NO RATIONALES PROBA ", original_proba)
+
+

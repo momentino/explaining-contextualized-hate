@@ -11,7 +11,7 @@ from model.model import RobertaForToxicClassification
 from utils.utils import get_optimizer, jsonl_to_df, get_loss_function, dataset_to_jsonl
 from data.dataset import ToxicLangDataset
 from train.train import train
-from eval.eval import predict_proba
+from eval.eval import predict_proba, eval_explanations
 from explainability.explainability import explain_lime
 
 from transformers import AutoTokenizer
@@ -61,9 +61,9 @@ def main(args):
     dataset_df = jsonl_to_df(dataset_path)
 
 
-    dataset = ToxicLangDataset(dataset_df=dataset_df, split='no_split', context=context, dataset_name=dataset_name)
+    dataset = ToxicLangDataset(dataset_df=dataset_df[:10], split='no_split', context=context, dataset_name=dataset_name)
 
-    test_loader = DataLoader(dataset, batch_size=1)
+    loader = DataLoader(dataset, batch_size=1)
 
     """ Define name of model """
     model_name = args.saved_model_name
@@ -74,11 +74,10 @@ def main(args):
 
 
     explainer = LimeTextExplainer(class_names=config['class_names_'+dataset_name])
-    explanations = explain_lime(test_loader, explainer, config['n_class_'+dataset_name], model,  tokenizer, device)
+    explanations = explain_lime(loader, explainer, config['n_class_'+dataset_name], model,  tokenizer, device)
     print(explanations)
     #TODO Define lime function and return metrics
-
-
+    comprehensiveness, sufficiency = eval_explanations(loader, explanations, model, tokenizer, device)
 
 
 if __name__ == '__main__':
