@@ -70,7 +70,7 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
         no_rationales_proba = predict_proba(text_without_rationales, model, tokenizer, device)
 
         pred_id = np.argmax(original_proba)
-        print(" ORIGINAL PROBA ",original_proba)
-        print(" NO RATIONALES PROBA ", no_rationales_proba)
+        print(" ORIGINAL PROBA ",original_proba[0][pred_id])
+        print(" NO RATIONALES PROBA ", no_rationales_proba[0][pred_id])
 
 
