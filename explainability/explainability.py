@@ -22,6 +22,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
         explanation = exp.as_map()[pred_id]
         print(" EXP LEN ",len(explanation), explanation)
         print(" TEXT LEN ",len(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0])," ",)
+        print(" EXPLAINABILITY ", tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0])
         for exp in explanation:
             if (exp[1] > 0):
                 lime_score[exp[0]] = exp[1]
