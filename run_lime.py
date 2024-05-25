@@ -83,8 +83,7 @@ def main(args):
     results_row = [dataset_name, context, model_name, 'LIME',comprehensiveness,sufficiency]
 
     combined_data = pd.concat([df, pd.DataFrame([results_row],
-                                                columns=["dataset", "context", "model_name", "seed", "accuracy",
-                                                         "precision", "recall", "f1"])], ignore_index=True)
+                                                columns=["dataset","context","model_name","exp_method","comprehensiveness","sufficiency"])], ignore_index=True)
     combined_data.to_csv(results_file, index=False)
 
 
