@@ -61,7 +61,7 @@ def main(args):
     dataset_df = jsonl_to_df(dataset_path)
 
 
-    dataset = ToxicLangDataset(dataset_df=dataset_df[:10], split='no_split', context=context, dataset_name=dataset_name)
+    dataset = ToxicLangDataset(dataset_df=dataset_df, split='no_split', context=context, dataset_name=dataset_name)
 
     loader = DataLoader(dataset, batch_size=1)
 
