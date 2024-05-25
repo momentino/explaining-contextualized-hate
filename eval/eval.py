@@ -48,7 +48,7 @@ def predict_proba(input, model, tokenizer, device):
         tokenized_inputs = tokenizer(input, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)
         tokenized_inputs = tokenized_inputs.to(device)
         outputs = model(**tokenized_inputs)
-        proba = outputs.logits.softmax(dim=-1).detach().numpy()
+        proba = outputs.softmax(dim=-1).detach().numpy()
 
 
     return proba
