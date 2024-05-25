@@ -75,7 +75,6 @@ def main(args):
 
     explainer = LimeTextExplainer(class_names=config['class_names_'+dataset_name])
     explanations = explain_lime(loader, explainer, config['n_class_'+dataset_name], model,  tokenizer, device)
-    print(explanations)
 
     comprehensiveness, sufficiency = eval_explanations(loader, explanations, model, tokenizer, device)
     df = pd.read_csv(results_file)
