@@ -23,7 +23,6 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, to
 
         explanation = exp.as_map()[pred_id]
         for exp in explanation:
-            print("EXP ",exp)
             if (exp[1] > 0):
                 lime_score[exp[0]] = exp[1]
 
@@ -36,6 +35,8 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, to
                 final_explanation.append(lime_score[i])
         final_explanation.append(0)
         lime_score = final_explanation
+
+        print(lime_score)
 
         topk_indicies = sorted(range(len(lime_score)), key=lambda i: lime_score[i])[-topk:]
 
