@@ -36,14 +36,14 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device, to
         final_explanation.append(0)
         lime_score = final_explanation
 
-        print(lime_score)
+
 
         topk_indicies = sorted(range(len(lime_score)), key=lambda i: lime_score[i])[-topk:]
 
         hard_rationales = []
         for ind in topk_indicies:
             hard_rationales.append({'end_token': ind + 1, 'start_token': ind})
-
+        print(" HARD RATIONALES ",hard_rationales)
         results["rationales"] = [{"hard_rationale_predictions": hard_rationales,
                                "soft_rationale_predictions": lime_score}]
         res_list.append(results)
