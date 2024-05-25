@@ -74,7 +74,7 @@ def main(args):
 
 
     explainer = LimeTextExplainer(class_names=config['class_names_'+dataset_name])
-    explanations = explain_lime(test_loader, explainer, model, tokenizer, device)
+    explanations = explain_lime(test_loader, explainer, config['n_class_'+dataset_name], model,  tokenizer, device)
     print(explanations)
     #TODO Define lime function and return metrics
 
