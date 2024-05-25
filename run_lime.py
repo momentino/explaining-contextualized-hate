@@ -80,7 +80,7 @@ def main(args):
     comprehensiveness, sufficiency = eval_explanations(loader, explanations, model, tokenizer, device)
     df = pd.read_csv(results_file)
 
-    results_row = [dataset_name, context, model_name, 'LIME',comprehensiveness,sufficiency]
+    results_row = [dataset_name, context, 'LIME',comprehensiveness,sufficiency]
 
     combined_data = pd.concat([df, pd.DataFrame([results_row],
                                                 columns=["dataset","context","exp_method","comprehensiveness","sufficiency"])], ignore_index=True)
