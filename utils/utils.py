@@ -32,6 +32,8 @@ def calculate_metrics(predictions, targets):
     predictions = torch.tensor(predictions).cpu().numpy()
     targets = torch.tensor(targets).cpu().numpy()
 
+    print(" PRED ", predictions)
+    print("TARGET ",targets)
     accuracy = (predictions == targets).mean()
     precision = precision_score(targets, predictions, average='weighted')
     recall = recall_score(targets, predictions, average='weighted')

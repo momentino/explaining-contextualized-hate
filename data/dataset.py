@@ -25,11 +25,11 @@ class ToxicLangDataset(Dataset):
         }
         if(context):
             if(dataset_name=="pavlopoulos20"):
-                self.df = self.df[self.df['context'].notna()] #take only those where context is not
+                self.df = self.df[self.df['context'].notna()] #take only those where context is not NaN
             self.contexts = self.df['context'][split_separators[split][0]:split_separators[split][1]].to_list()
         else:
             if (dataset_name == "pavlopoulos20"):
-                self.df = self.df[self.df['context'].isna()]  # take only those where context is not
+                self.df = self.df[self.df['context'].isna()]  # take only those where context is NaN
         self.texts = self.df['target'][split_separators[split][0]:split_separators[split][1]].to_list()
         self.labels = self.df['label'][split_separators[split][0]:split_separators[split][1]].to_list()
 
