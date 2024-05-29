@@ -12,6 +12,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
             print(" Avoid sample ")
             continue
         if(len(input) > 1):
+            print(input)
             text = input[0][0] + '</s><s>' + input[1][0]
         else:
             text = input[0][0]
