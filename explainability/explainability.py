@@ -8,7 +8,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
     res_list = []
     for input, label in tqdm(dataloader):
         print(label)
-        if(label == 1):
+        if(label[0] == 1):
             continue
         if(len(input) > 1):
             text = input[0][0] + '</s><s>' + input[1][0]
