@@ -34,7 +34,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
         #print("LIME SCORE ",lime_score)
 
         final_explanation = [0]
-        tokens = tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0]
+        tokens = tokenizer(text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0]
         for i in range(len(tokens)):
             #temp_tokens = tokenizer.encode(tokens[i], add_special_tokens=False)
             #for j in range(len(temp_tokens)):
