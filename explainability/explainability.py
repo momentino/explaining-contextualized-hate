@@ -22,7 +22,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
         #print(" TRUE LABEL ",label)
         #results["classification"] = pred_id
         #print(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'])
-        lime_score = [0] * len(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0])
+        lime_score = [0] * len(tokenizer(text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0])
         #print(" LIME SCORE LEN ",len(lime_score))
         explanation = exp.as_map()[pred_id]
         #print(" EXP LEN ",len(explanation), explanation)
