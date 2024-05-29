@@ -65,10 +65,10 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
         if(label[0] == 1):
             continue
         if(len(input) > 1):
-            original_text = input[0][0] + input[1][0]
+            original_text = input[0][0] + '</s><s>'+ input[1][0]
         else:
             original_text = input[0][0]
-        tokens = tokenizer(original_text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0]
+        tokens = tokenizer(original_text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0]
         #print(" TOKENS ", len(tokens))
         #print(" RATIONALES ",len(rationales[index]))
         text_without_rationales = [t1 for t1, t2 in zip(tokens, rationales[index]) if t2 == 0 or tokenizer.decode(t1) in ['<s>','</s>']]
