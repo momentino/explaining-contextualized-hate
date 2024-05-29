@@ -13,16 +13,16 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
             continue
         if(len(input) > 1):
             print(input)
-            text = input[0][0] + '</s><s>' + input[1][0]
+            text = input[0][0] + input[1][0]
         else:
             text = input[0][0]
-        exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=10, num_samples=500)
+        exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=30, num_samples=500)
 
         pred_id = np.argmax(exp.predict_proba)
         #print(" TRUE LABEL ",label)
         #results["classification"] = pred_id
         #print(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'])
-        lime_score = [0] * len(tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0])
+        lime_score = [0] * len(tokenizer(text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0])
         #print(" LIME SCORE LEN ",len(lime_score))
         explanation = exp.as_map()[pred_id]
         #print(" EXP LEN ",len(explanation), explanation)
@@ -34,7 +34,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
         #print("LIME SCORE ",lime_score)
 
         final_explanation = [0]
-        tokens = tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0]
+        tokens = tokenizer(text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0]
         for i in range(len(tokens)):
             #temp_tokens = tokenizer.encode(tokens[i], add_special_tokens=False)
             #for j in range(len(temp_tokens)):
