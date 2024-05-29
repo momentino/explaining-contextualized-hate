@@ -75,17 +75,17 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
         text_without_rationales = tokenizer.decode(text_without_rationales)
         only_rationales = [t1 for t1, t2 in zip(tokens, rationales[index]) if t2 != 0 or tokenizer.decode(t1) in ['<s>','</s>']]
         only_rationales = tokenizer.decode(only_rationales)
-        #print(" ORIGINAL ", original_text)
-        #print(" NO RATIONALES ", text_without_rationales)
-        #print(" ONLY RATIONALES ",only_rationales)
+        print(" ORIGINAL ", original_text)
+        print(" NO RATIONALES ", text_without_rationales)
+        print(" ONLY RATIONALES ",only_rationales)
 
         original_proba = predict_proba(original_text, model, tokenizer, device)
         no_rationales_proba = predict_proba(text_without_rationales, model, tokenizer, device)
         only_rationales = predict_proba(only_rationales, model, tokenizer, device)
 
         pred_id = np.argmax(original_proba)
-        #print(" ORIGINAL PROBA ",original_proba[0][pred_id])
-        #print(" NO RATIONALES PROBA ", no_rationales_proba[0][pred_id])
+        print(" ORIGINAL PROBA ",original_proba[0][pred_id])
+        print(" NO RATIONALES PROBA ", no_rationales_proba[0][pred_id])
         comprehensiveness.append(original_proba[0][pred_id] - no_rationales_proba[0][pred_id])
         sufficiency.append(original_proba[0][pred_id] - only_rationales[0][pred_id])
 
