@@ -36,8 +36,6 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
             #temp_tokens = tokenizer.encode(tokens[i], add_special_tokens=False)
             #for j in range(len(temp_tokens)):
             final_explanation.append(lime_score[i])
-        print(lime_score)
-        print(" FINAL EXPLANATION ",final_explanation)
         final_explanation.append(0)
         lime_score = final_explanation
 
