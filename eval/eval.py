@@ -62,6 +62,8 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
     sufficiency = []
     index = 0
     for input, label in tqdm(dataloader):
+        if(label == "neutral"):
+            continue
         if(len(input) > 1):
             original_text = input[0][0] + '</s><s>' + input[1][0]
         else:
