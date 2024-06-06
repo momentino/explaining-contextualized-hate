@@ -52,7 +52,7 @@ def explain_shap(dataloader, explainer, model, tokenizer, device):
         print(explanation)
         for exp in explanation:
             if (exp > 0):
-                shap_score[exp[0]] = exp[1]
+                shap_score[exp[0]] = exp
         """final_explanation = [0]
         tokens = tokenizer(text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512,
                            truncation=True)['input_ids'][0]
