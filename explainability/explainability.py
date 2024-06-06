@@ -50,9 +50,9 @@ def explain_shap(dataloader, explainer, model, tokenizer, device):
         pred_id = np.argmax(pred_classes)
         explanation = shap_values[i].T[pred_id] # Shape shap_values[i]: len x num_classes, shap_values[i].T: num_classes x len
         print(explanation)
-        for exp in explanation:
+        for i,exp in enumerate(explanation):
             if (exp > 0):
-                shap_score[exp[0]] = exp
+                shap_score[i] = exp
         """final_explanation = [0]
         tokens = tokenizer(text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512,
                            truncation=True)['input_ids'][0]
