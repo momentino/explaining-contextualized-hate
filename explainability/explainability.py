@@ -40,6 +40,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
 def explain_shap(dataloader, explainer, model, tokenizer, device):
     res_list = []
     texts = [input[0][0] if len(input) > 1 else input[0][0] + input[1][0] for input,_ in tqdm(dataloader)] # just text or text+context
+    texts = texts[:2]
     exp = explainer(texts)
     shap_values = exp.values
     for i, text in enumerate(texts):

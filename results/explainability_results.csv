@@ -1,2 +1,2 @@
 dataset,context,exp_method,comprehensiveness,sufficiency
-yu22,True,LIME,0.3436671665993081,0.4820453178691098
+yu22,True,LIME,0.5038161809185902,0.48956721590225954
