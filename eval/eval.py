@@ -78,9 +78,9 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
         print(" ONLY RATIONALES ",only_rationales)
 
         original_proba = predict_proba(original_text, model, tokenizer, device)
-        no_rationales_proba = predict_proba(text_without_rationales, model, tokenizer, device) if text_without_rationales != "" else [0,0,0]
+        no_rationales_proba = predict_proba(text_without_rationales, model, tokenizer, device) if text_without_rationales != "" else [[0,0,0]]
 
-        only_rationales_proba = predict_proba(only_rationales, model, tokenizer, device) if only_rationales != "" else [0,0,0]
+        only_rationales_proba = predict_proba(only_rationales, model, tokenizer, device) if only_rationales != "" else [[0,0,0]]
 
         pred_id = np.argmax(original_proba)
         #print(" ORIGINAL PROBA ",original_proba[0][pred_id])
