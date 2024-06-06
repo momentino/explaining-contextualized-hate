@@ -83,9 +83,9 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
         only_rationales_proba = predict_proba(only_rationales, model, tokenizer, device) if only_rationales != "" else 0
 
         pred_id = np.argmax(original_proba)
-        print(" ORIGINAL PROBA ",original_proba[0][pred_id])
-        print(" NO RATIONALES PROBA ", no_rationales_proba[0][pred_id])
-        print(" NO RATIONALES PROBA ", only_rationales_proba[0][pred_id])
+        #print(" ORIGINAL PROBA ",original_proba[0][pred_id])
+        #print(" NO RATIONALES PROBA ", no_rationales_proba[0][pred_id])
+        #print(" NO RATIONALES PROBA ", only_rationales_proba[0][pred_id])
         comprehensiveness.append(original_proba[0][pred_id] - no_rationales_proba[0][pred_id])
         sufficiency.append(original_proba[0][pred_id] - only_rationales_proba[0][pred_id])
 
