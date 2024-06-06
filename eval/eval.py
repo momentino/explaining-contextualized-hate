@@ -63,13 +63,9 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
     comprehensiveness = []
     sufficiency = []
     index = 0
-    for input, label in tqdm(dataloader):
-        if(label[0] == 1):
-            continue
-        if(len(input) > 1):
-            original_text = input[0][0] + input[1][0]
-        else:
-            original_text = input[0][0]
+    original_texts = [input[0][0] if len(input) > 1 else input[0][0] + input[1][0] for input, _ in
+             tqdm(dataloader)]  # just text or text+context
+    for original_text in original_texts:
         tokens = tokenizer(original_text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0]
         #print(" TOKENS ", len(tokens))
         #print(" RATIONALES ",len(rationales[index]))
@@ -83,13 +79,15 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
 
         original_proba = predict_proba(original_text, model, tokenizer, device)
         no_rationales_proba = predict_proba(text_without_rationales, model, tokenizer, device)
-        only_rationales = predict_proba(only_rationales, model, tokenizer, device)
+
+        only_rationales_proba = predict_proba(only_rationales, model, tokenizer, device) if only_rationales != "" else 0
 
         pred_id = np.argmax(original_proba)
         print(" ORIGINAL PROBA ",original_proba[0][pred_id])
         print(" NO RATIONALES PROBA ", no_rationales_proba[0][pred_id])
+        print(" NO RATIONALES PROBA ", only_rationales_proba[0][pred_id])
         comprehensiveness.append(original_proba[0][pred_id] - no_rationales_proba[0][pred_id])
-        sufficiency.append(original_proba[0][pred_id] - only_rationales[0][pred_id])
+        sufficiency.append(original_proba[0][pred_id] - only_rationales_proba[0][pred_id])
 
         index+=1
     comprehensiveness_score = sum(comprehensiveness)/len(comprehensiveness)
