@@ -43,6 +43,8 @@ def eval(model, tokenizer, loader, device):
     return val_accuracy, val_precision, val_recall, val_f1
 
 def predict_proba(input, model, tokenizer, device):
+    """ Needed because SHAP passes a list with a single string as input and the tokenizer throws an error where there is a list with len == 1 as input """
+    input = list(input) if isinstance(input, np.ndarray) else input
     model.eval()
     with torch.no_grad():
         tokenized_inputs = tokenizer(input, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512, truncation=True)

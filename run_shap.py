@@ -1,22 +1,22 @@
-from explainability.lime_text import LimeTextExplainer
-
-import torch
-from torch.utils.data import DataLoader
-
+import shap
+import csv
+import pandas as pd
 import argparse
 import os
 import yaml
+from functools import partial
+
+from torch.utils.data import DataLoader
+import torch
 
 from model.model import RobertaForToxicClassification
 from utils.utils import jsonl_to_df
 from data.dataset import ToxicLangDataset
-from eval.eval import eval_explanations
-from explainability.explainability import explain_lime
+from eval.eval import eval_explanations, predict_proba
+from explainability.explainability import explain_shap
 
+import transformers
 from transformers import AutoTokenizer
-
-import csv
-import pandas as pd
 
 def get_args_parser():
     parser = argparse.ArgumentParser('', add_help=False)
@@ -71,14 +71,13 @@ def main(args):
     """ Evaluate """
     model.load_state_dict(torch.load(os.path.join(model_save_path, model_name))) # Load best model
 
-
-    explainer = LimeTextExplainer(class_names=config['class_names_'+dataset_name])
-    explanations = explain_lime(loader, explainer, config['n_class_'+dataset_name], model,  tokenizer, device)
+    explainer = shap.Explainer(model=partial(predict_proba, model=model, tokenizer=tokenizer, device=device), masker=tokenizer)
+    explanations = explain_shap(loader, explainer, model, tokenizer, device)
 
     comprehensiveness, sufficiency = eval_explanations(loader, explanations, model, tokenizer, device)
     df = pd.read_csv(results_file)
 
-    results_row = [dataset_name, context, 'LIME',comprehensiveness,sufficiency]
+    results_row = [dataset_name, context, 'SHAP',comprehensiveness,sufficiency]
 
     combined_data = pd.concat([df, pd.DataFrame([results_row],
                                                 columns=["dataset","context","exp_method","comprehensiveness","sufficiency"])], ignore_index=True)
