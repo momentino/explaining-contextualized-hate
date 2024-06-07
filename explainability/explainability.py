@@ -9,7 +9,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
     for i,t in tqdm(dataloader):
         print(i)
     texts = [input[0][0] if len(input) < 2 else input[0][0] + input[1][0] for input, _ in tqdm(dataloader)]
-    for text in texts[:2]:
+    for text in texts:
         exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=60, num_samples=500)
 
         pred_id = np.argmax(exp.predict_proba)

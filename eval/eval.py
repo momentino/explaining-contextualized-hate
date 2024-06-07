@@ -65,7 +65,7 @@ def eval_explanations(dataloader, rationales, model, tokenizer, device):
     index = 0
     original_texts = [input[0][0] if len(input) <2 else input[0][0] + input[1][0] for input, _ in
              tqdm(dataloader)]  # just text or text+context
-    for original_text in original_texts[:2]:
+    for original_text in original_texts:
         tokens = tokenizer(original_text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0]
         #print(" TOKENS ", len(tokens))
         #print(" RATIONALES ",len(rationales[index]))
