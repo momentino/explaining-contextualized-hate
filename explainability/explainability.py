@@ -6,8 +6,10 @@ import numpy as np
 def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
 
     res_list = []
-    texts = [input[0][0] if len(input) > 1 else input[0][0] + input[1][0] for input, _ in tqdm(dataloader)]
-    for text in texts:
+    for i,t in tqdm(dataloader):
+        print(i)
+    texts = [input[0][0] if len(input) < 2 else input[0][0] + input[1][0] for input, _ in tqdm(dataloader)]
+    for text in texts[:2]:
         exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=60, num_samples=500)
 
         pred_id = np.argmax(exp.predict_proba)
@@ -39,7 +41,7 @@ def explain_lime(dataloader, explainer, top_labels, model, tokenizer, device):
 
 def explain_shap(dataloader, explainer, model, tokenizer, device):
     res_list = []
-    texts = [input[0][0] if len(input) > 1 else input[0][0] + input[1][0] for input,_ in tqdm(dataloader)] # just text or text+context
+    texts = [input[0][0] if len(input) < 2 else input[0][0] + input[1][0] for input,_ in tqdm(dataloader)] # just text or text+context
     exp = explainer(texts)
     shap_values = exp.values
     for i, text in enumerate(texts):
