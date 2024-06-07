@@ -76,6 +76,7 @@ def main(args):
     explanations = explain_lime(loader, explainer, config['n_class_'+dataset_name], model,  tokenizer, device)
 
     comprehensiveness, sufficiency = eval_explanations(loader, explanations, model, tokenizer, device)
+    print(" Quality of the explanations evaluated. Comprehensiveness: {}, Sufficiency: {}".format(comprehensiveness,sufficiency))
     df = pd.read_csv(results_file)
 
     results_row = [dataset_name, context, 'LIME',comprehensiveness,sufficiency]
