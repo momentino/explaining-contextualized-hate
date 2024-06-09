@@ -73,6 +73,8 @@ def main(args):
     model.load_state_dict(torch.load(os.path.join(model_save_path, model_name))) # Load best model
 
     save_explanation_plots_folder = os.path.join(config['save_plot_folder_lime'], "context" if context else "no_context")
+    if not os.path.isdir(save_explanation_plots_folder):
+        os.mkdir(save_explanation_plots_folder)
     explainer = LimeTextExplainer(class_names=config['class_names_'+dataset_name], bow=False)
     original_texts, no_rationales,only_rationales = explain_lime(loader, explainer, config['n_class_'+dataset_name],
                                 save_explanation_plots_folder,

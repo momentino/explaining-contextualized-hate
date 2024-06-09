@@ -53,6 +53,7 @@ def main(args):
     if not os.path.exists(model_save_path):
         os.makedirs(model_save_path)
 
+
     """ Tokenizer """
     tokenizer = AutoTokenizer.from_pretrained(config['model'])
 
@@ -73,6 +74,8 @@ def main(args):
     model.load_state_dict(torch.load(os.path.join(model_save_path, model_name))) # Load best model
     save_explanation_plots_folder = os.path.join(config['save_plot_folder_shap'],
                                                  "context" if context else "no_context")
+    if not os.path.isdir(save_explanation_plots_folder):
+        os.mkdir(save_explanation_plots_folder)
     explainer = shap.Explainer(model=partial(predict_proba, model=model, tokenizer=tokenizer, device=device), masker=tokenizer)
     original_texts, no_rationales,only_rationales = explain_shap(loader, explainer, model, save_explanation_plots_folder, tokenizer, device)
 
