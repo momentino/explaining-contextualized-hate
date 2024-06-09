@@ -4,9 +4,7 @@ from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 import shap
-from utils.utils import custom_shap_token_segments
 from explainability.lime_text import IndexedString
-from shap.maskers._text import Text
 
 
 # Text.token_segments = custom_shap_token_segments # Monkey patch with SHAP because it doesn't support inputs that are multiple sequences separated by </s></s> tokens
