@@ -70,15 +70,15 @@ def main(args):
 
     """ Evaluate """
     model.load_state_dict(torch.load(os.path.join(model_save_path, model_name))) # Load best model
-
+    save_explanation_plots_folder = os.path.join(config['save_plot_folder_shap'],
+                                                 "context" if context else "no_context")
     explainer = shap.Explainer(model=partial(predict_proba, model=model, tokenizer=tokenizer, device=device), masker=tokenizer)
-    explanations = explain_shap(loader, explainer, model, tokenizer, device)
+    explanations = explain_shap(loader, explainer, model, save_explanation_plots_folder, tokenizer, device)
 
     comprehensiveness, sufficiency = eval_explanations(loader, explanations, model, tokenizer, device)
+    print(" Quality of the explanations evaluated. Comprehensiveness: {}, Sufficiency: {}".format(comprehensiveness, sufficiency))
     df = pd.read_csv(results_file)
-
     results_row = [dataset_name, context, 'SHAP',comprehensiveness,sufficiency]
-
     combined_data = pd.concat([df, pd.DataFrame([results_row],
                                                 columns=["dataset","context","exp_method","comprehensiveness","sufficiency"])], ignore_index=True)
     combined_data.to_csv(results_file, index=False)

@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 import argparse
 import os
 import yaml
+import shutil
 
 from model.model import RobertaForToxicClassification
 from utils.utils import jsonl_to_df
@@ -71,19 +72,25 @@ def main(args):
     """ Evaluate """
     model.load_state_dict(torch.load(os.path.join(model_save_path, model_name))) # Load best model
 
-
-    explainer = LimeTextExplainer(class_names=config['class_names_'+dataset_name])
-    explanations = explain_lime(loader, explainer, config['n_class_'+dataset_name], model,  tokenizer, device)
+    save_explanation_plots_folder = os.path.join(config['save_plot_folder_lime'], "context" if context else "no_context")
+    explainer = LimeTextExplainer(class_names=config['class_names_'+dataset_name], bow=False)
+    explanations = explain_lime(loader, explainer, config['n_class_'+dataset_name],
+                                save_explanation_plots_folder,
+                                model,
+                                tokenizer,
+                                device)
 
     comprehensiveness, sufficiency = eval_explanations(loader, explanations, model, tokenizer, device)
     print(" Quality of the explanations evaluated. Comprehensiveness: {}, Sufficiency: {}".format(comprehensiveness,sufficiency))
     df = pd.read_csv(results_file)
-
     results_row = [dataset_name, context, 'LIME',comprehensiveness,sufficiency]
-
     combined_data = pd.concat([df, pd.DataFrame([results_row],
                                                 columns=["dataset","context","exp_method","comprehensiveness","sufficiency"])], ignore_index=True)
     combined_data.to_csv(results_file, index=False)
+
+    """ Save the folder with the explanations to ZIP so that we can get it when running in the Colab """
+    #shutil.make_archive(f'{save_explanation_plots_folder}/plots', 'zip', save_explanation_plots_folder)
+
 
 
 
