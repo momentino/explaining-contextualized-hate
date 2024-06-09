@@ -9,13 +9,6 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 import os
 import yaml
 
-from shap.utils.transformers import (
-    SENTENCEPIECE_TOKENIZERS,
-    getattr_silent,
-    parse_prefix_suffix_for_tokenizer,
-)
-from shap.utils import safe_isinstance
-
 
 def get_optimizer(optimizer_name: str, parameters, **kwargs):
     optimizer_class = getattr(optim, optimizer_name)
@@ -74,56 +67,3 @@ def load_config(config_path, config_name):
 
     return config
 
-
-def custom_shap_token_segments(self, s):
-    """ Returns the substrings associated with each token in the given string.
-    """
-
-    try:
-        if(isinstance(s, tuple) and len(s) == 2):
-            token_data = self.tokenizer(s[0],s[1], return_offsets_mapping=True)
-            offsets = token_data["offset_mapping"]
-            offsets = [(0, 0) if o is None else o for o in offsets]
-            # get the position of the first special character </s> because we need to find the end of the first sentence and the beginning of the second
-            offset_pos_input_sep = [i for i, n in enumerate(offsets) if n == (0,0)][1]
-            parts = ([s[0][offsets[i][0]:max(offsets[i][1], offsets[i + 1][0])] for i in range(offset_pos_input_sep)] +
-                     [s[1][offsets[i][0]:max(offsets[i][1], offsets[i + 1][0])] for i in range(offset_pos_input_sep,len(offsets) - 1)])
-            parts.append(s[1][offsets[len(offsets) - 1][0]:offsets[len(offsets) - 1][1]])
-        elif (isinstance(s,str)):
-            token_data = self.tokenizer(s, return_offsets_mapping=True)
-            offsets = token_data["offset_mapping"]
-            offsets = [(0, 0) if o is None else o for o in offsets]
-
-            parts = [s[offsets[i][0]:max(offsets[i][1], offsets[i+1][0])] for i in range(len(offsets)-1)]
-            parts.append(s[offsets[len(offsets)-1][0]:offsets[len(offsets)-1][1]])
-        return parts, token_data["input_ids"]
-    except (NotImplementedError, TypeError): # catch lack of support for return_offsets_mapping
-        if (isinstance(s, tuple) and len(s) == 2):
-            token_ids = self.tokenizer(s[0],s[1])['input_ids']
-        elif (isinstance(s, str)):
-            token_ids = self.tokenizer(s)['input_ids']
-        if hasattr(self.tokenizer, "convert_ids_to_tokens"):
-            tokens = self.tokenizer.convert_ids_to_tokens(token_ids)
-        else:
-            tokens = [self.tokenizer.decode([id]) for id in token_ids]
-        if hasattr(self.tokenizer, "get_special_tokens_mask"):
-            special_tokens_mask = self.tokenizer.get_special_tokens_mask(token_ids, already_has_special_tokens=True)
-            # avoid masking separator tokens, but still mask beginning of sentence and end of sentence tokens
-            special_keep = [getattr_silent(self.tokenizer, 'sep_token'), getattr_silent(self.tokenizer, 'mask_token')]
-            for i, v in enumerate(special_tokens_mask):
-                if v == 1 and (tokens[i] not in special_keep or i + 1 == len(special_tokens_mask)):
-                    tokens[i] = ""
-
-        # add spaces to separate the tokens (since we want segments not tokens)
-        if safe_isinstance(self.tokenizer, SENTENCEPIECE_TOKENIZERS):
-            for i, v in enumerate(tokens):
-                if v.startswith("_"):
-                    tokens[i] = " " + tokens[i][1:]
-        else:
-            for i, v in enumerate(tokens):
-                if v.startswith("##"):
-                    tokens[i] = tokens[i][2:]
-                elif v != "" and i != 0:
-                    tokens[i] = " " + tokens[i]
-
-        return tokens, token_ids
