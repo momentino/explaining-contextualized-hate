@@ -5,46 +5,44 @@ import numpy as np
 import matplotlib.pyplot as plt
 import shap
 from utils.utils import custom_shap_token_segments
-
+from explainability.lime_text import IndexedString
 from shap.maskers._text import Text
-#Text.token_segments = custom_shap_token_segments # Monkey patch with SHAP because it doesn't support inputs that are multiple sequences separated by </s></s> tokens
+
+
+# Text.token_segments = custom_shap_token_segments # Monkey patch with SHAP because it doesn't support inputs that are multiple sequences separated by </s></s> tokens
 
 def explain_lime(dataloader, explainer, top_labels, save_plot_folder, model, tokenizer, device):
+    no_rationales = []
+    only_rationales = []
 
-    res_list = []
     texts = [input[0][0] if len(input) < 2 else input[0][0] + '</s></s>' + input[1][0] for input, _ in tqdm(dataloader)]
-    for idx,text in enumerate(texts[:2]):
-        exp = explainer.explain_instance(text[:50], predict_proba, model, tokenizer, device, top_labels=top_labels, num_features=60, num_samples=500)
+    for idx, text in enumerate(texts):
+        exp = explainer.explain_instance(text, predict_proba, model, tokenizer, device, top_labels=top_labels,
+                                         num_features=60, num_samples=500)
         exp.save_to_file(f'{save_plot_folder}/{idx}.html')
         pred_id = np.argmax(exp.predict_proba)
-        #print(tokenizer.tokenize(text))
-
-        lime_score = [0] * len(tokenizer(text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0])
-        explanation = exp.as_list(label=pred_id)
         explanation_as_map = exp.as_map()[pred_id]
-        #for exp in explanation:
-        #    if (exp[1] > 0):
-        #        lime_score[exp[0]] = exp[1]
+        """ We match the explanations with the tokens obtained by the tokenizer LIME library uses. Then we extract the rationales"""
+        lime_tokenized_text = IndexedString(text, bow=False).inverse_vocab
+        #print(lime_tokenized_text)
+        #print(explanation_as_map)
+        explanation_as_map = sorted(explanation_as_map, key=lambda x: x[0]) # the indexes of the map are not in the right order
+        text_without_rationales = " ".join([t for t,(index,score) in zip(lime_tokenized_text, explanation_as_map) if score<=0])
+        text_only_rationales = " ".join([t for t,(index,score) in zip(lime_tokenized_text, explanation_as_map) if score>0])
+        no_rationales.append(text_without_rationales)
+        only_rationales.append(text_only_rationales)
 
-        """final_explanation = [0]
-        tokens = tokenizer(text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512, truncation=True)['input_ids'][0]
-        for i in range(len(tokens)):
-            #temp_tokens = tokenizer.encode(tokens[i], add_special_tokens=False)
-            #for j in range(len(temp_tokens)):
-            final_explanation.append(lime_score[i])
-        final_explanation.append(0)
-        lime_score = final_explanation"""
-        res_list.append(explanation)
+    return texts, no_rationales, only_rationales
 
-    return res_list
 
-def explain_shap(dataloader, explainer, model, save_plot_folder,tokenizer, device):
-    res_list = []
-    #texts = [input[0][0] if len(input) < 2 else (input[0][0],input[1][0]) for input,_ in tqdm(dataloader)][:5] # just text or text+context
-    texts = [input[0][0] if len(input) < 2 else input[0][0] + "</s></s>" + input[1][0] for input, _ in tqdm(dataloader)]  # just text or text+context
+def explain_shap(dataloader, explainer, model, save_plot_folder, tokenizer, device):
+    no_rationales = []
+    only_rationales = []
+    # texts = [input[0][0] if len(input) < 2 else (input[0][0],input[1][0]) for input,_ in tqdm(dataloader)][:5] # just text or text+context
+    texts = [input[0][0] if len(input) < 2 else input[0][0] + "</s></s>" + input[1][0] for input, _ in
+             tqdm(dataloader)][:2]  # just text or text+context
     explanations = explainer(texts)
     shap_values = explanations.values
-
 
     for i, text in enumerate(texts):
         with open(f'{save_plot_folder}/{i}.html', 'w') as f:
@@ -53,18 +51,20 @@ def explain_shap(dataloader, explainer, model, save_plot_folder,tokenizer, devic
         shap_score = [0] * shap_values[i].shape[0]
         """ Get the explanation for the majority class """
         pred_id = np.argmax(pred_classes)
-        explanation = shap_values[i].T[pred_id] # Shape shap_values[i]: len x num_classes, shap_values[i].T: num_classes x len
-        for i,exp in enumerate(explanation):
+        explanation = shap_values[i].T[
+            pred_id]  # Shape shap_values[i]: len x num_classes, shap_values[i].T: num_classes x len
+        for i, exp in enumerate(explanation):
             if (exp > 0):
                 shap_score[i] = exp
-        """final_explanation = [0]
-        tokens = tokenizer(text, add_special_tokens=False, padding='longest', return_tensors='pt', max_length=512,
-                           truncation=True)['input_ids'][0]
-        for i in range(len(tokens)):
-            # temp_tokens = tokenizer.encode(tokens[i], add_special_tokens=False)
-            # for j in range(len(temp_tokens)):
-            final_explanation.append(shap_score[i])
-        final_explanation.append(0)
-        shap_score = final_explanation"""
-        res_list.append(shap_score)
-    return  res_list
+
+        tokens = tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt',
+                           max_length=512, truncation=True)['input_ids'][0]
+        text_without_rationales = [t1 for t1, t2 in zip(tokens, shap_score) if
+                                   t2 == 0 or tokenizer.decode(t1) in ['<s>', '</s>']][1:-1]
+        text_without_rationales = tokenizer.decode(text_without_rationales)
+        text_only_rationales = [t1 for t1, t2 in zip(tokens, shap_score) if
+                                t2 != 0 or tokenizer.decode(t1) in ['<s>', '</s>']][1:-1]
+        text_only_rationales = tokenizer.decode(text_only_rationales)
+        no_rationales.append(text_without_rationales)
+        only_rationales.append(text_only_rationales)
+    return texts, no_rationales, only_rationales

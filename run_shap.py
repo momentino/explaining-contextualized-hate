@@ -5,6 +5,7 @@ import argparse
 import os
 import yaml
 from functools import partial
+import shutil
 
 from torch.utils.data import DataLoader
 import torch
@@ -73,15 +74,18 @@ def main(args):
     save_explanation_plots_folder = os.path.join(config['save_plot_folder_shap'],
                                                  "context" if context else "no_context")
     explainer = shap.Explainer(model=partial(predict_proba, model=model, tokenizer=tokenizer, device=device), masker=tokenizer)
-    explanations = explain_shap(loader, explainer, model, save_explanation_plots_folder, tokenizer, device)
+    original_texts, no_rationales,only_rationales = explain_shap(loader, explainer, model, save_explanation_plots_folder, tokenizer, device)
 
-    comprehensiveness, sufficiency = eval_explanations(loader, explanations, model, tokenizer, device)
+    comprehensiveness, sufficiency = eval_explanations(original_texts, no_rationales, only_rationales, model, tokenizer, device)
     print(" Quality of the explanations evaluated. Comprehensiveness: {}, Sufficiency: {}".format(comprehensiveness, sufficiency))
     df = pd.read_csv(results_file)
     results_row = [dataset_name, context, 'SHAP',comprehensiveness,sufficiency]
     combined_data = pd.concat([df, pd.DataFrame([results_row],
                                                 columns=["dataset","context","exp_method","comprehensiveness","sufficiency"])], ignore_index=True)
     combined_data.to_csv(results_file, index=False)
+
+    """ Save the folder with the explanations to ZIP so that we can get it when running in the Colab """
+    shutil.make_archive(f'{config["save_plot_folder_shap"]}/plots_{"context" if context else "no_context"}', 'zip', save_explanation_plots_folder)
 
 
 

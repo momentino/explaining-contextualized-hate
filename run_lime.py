@@ -74,13 +74,13 @@ def main(args):
 
     save_explanation_plots_folder = os.path.join(config['save_plot_folder_lime'], "context" if context else "no_context")
     explainer = LimeTextExplainer(class_names=config['class_names_'+dataset_name], bow=False)
-    explanations = explain_lime(loader, explainer, config['n_class_'+dataset_name],
+    original_texts, no_rationales,only_rationales = explain_lime(loader, explainer, config['n_class_'+dataset_name],
                                 save_explanation_plots_folder,
                                 model,
                                 tokenizer,
                                 device)
 
-    comprehensiveness, sufficiency = eval_explanations(loader, explanations, model, tokenizer, device)
+    comprehensiveness, sufficiency = eval_explanations(original_texts, no_rationales, only_rationales, model, tokenizer, device)
     print(" Quality of the explanations evaluated. Comprehensiveness: {}, Sufficiency: {}".format(comprehensiveness,sufficiency))
     df = pd.read_csv(results_file)
     results_row = [dataset_name, context, 'LIME',comprehensiveness,sufficiency]
@@ -89,7 +89,7 @@ def main(args):
     combined_data.to_csv(results_file, index=False)
 
     """ Save the folder with the explanations to ZIP so that we can get it when running in the Colab """
-    #shutil.make_archive(f'{save_explanation_plots_folder}/plots', 'zip', save_explanation_plots_folder)
+    shutil.make_archive(f'{config["save_plot_folder_lime"]}/plots_{"context" if context else "no_context"}', 'zip', save_explanation_plots_folder)
 
 
 

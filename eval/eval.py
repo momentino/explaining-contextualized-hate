@@ -58,29 +58,18 @@ def predict_proba(input, model, tokenizer, device):
     return proba
 
 
-def eval_explanations(dataloader, rationales, model, tokenizer, device):
+def eval_explanations(original_texts, no_rationales, only_rationales, model, tokenizer, device):
     comprehensiveness = []
     sufficiency = []
     index = 0
-    original_texts = [input[0][0] if len(input) <2 else input[0][0] + "</s></s>" + input[1][0] for input, _ in
-             tqdm(dataloader)]  # just text or text+context
-    for original_text in original_texts[:2]:
-        tokens = tokenizer(original_text[:50], add_special_tokens=True, padding='longest', return_tensors='pt',
-                                     max_length=512, truncation=True)['input_ids'][0]
-        text_without_rationales = [t1 for t1, t2 in zip(tokens, rationales[index]) if t2 == 0 or tokenizer.decode(t1) in ['<s>','</s>']][1:-1]
-        text_without_rationales = tokenizer.decode(text_without_rationales)
-        only_rationales = [t1 for t1, t2 in zip(tokens, rationales[index]) if t2 != 0 or tokenizer.decode(t1) in ['<s>','</s>']][1:-1]
-        only_rationales = tokenizer.decode(only_rationales)
-
+    for original_text, text_no_rationales, text_only_rationales in zip(original_texts, no_rationales, only_rationales):
         original_proba = predict_proba(original_text, model, tokenizer, device)
-        no_rationales_proba = predict_proba(text_without_rationales, model, tokenizer, device) if text_without_rationales != "" else [[0,0,0]]
-        only_rationales_proba = predict_proba(only_rationales, model, tokenizer, device) if only_rationales != "" else [[0,0,0]]
-        print(" ONLY RATIONALES ",only_rationales)
+        no_rationales_proba = predict_proba(text_no_rationales, model, tokenizer, device) if text_no_rationales != "" else [[0,0,0]]
+        only_rationales_proba = predict_proba(text_only_rationales, model, tokenizer, device) if text_only_rationales != "" else [[0,0,0]]
+        print(" ONLY RATIONALES ",text_only_rationales)
         pred_id = np.argmax(original_proba)
-
         comprehensiveness.append(original_proba[0][pred_id] - no_rationales_proba[0][pred_id])
         sufficiency.append(original_proba[0][pred_id] - only_rationales_proba[0][pred_id])
-
         index += 1
     comprehensiveness_score = sum(comprehensiveness)/len(comprehensiveness)
     sufficiency_score = sum(sufficiency)/len(sufficiency)
