@@ -34,7 +34,7 @@ def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, cri
                 tokenized_inputs = tokenizer(inputs[0], padding='longest', return_tensors='pt', max_length=512, truncation=True)
             tokenized_inputs = tokenized_inputs.to(device)
             labels = labels.to(device)
-            outputs = model(**tokenized_inputs)
+            outputs, _ = model(**tokenized_inputs)
             loss = criterion(outputs, labels)
 
             optimizer.zero_grad()

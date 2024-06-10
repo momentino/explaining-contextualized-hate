@@ -87,10 +87,7 @@ def main(args):
     plt.figure(figsize=(10, 8))
     for label in np.unique(labels):
         indices = np.where(labels == label)
-        plt.scatter(embeddings_2d[indices, 0], embeddings_2d[indices, 1],
-                    cmap='viridis', label=label_names[label])
-    #plt.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], label=label_names[labels])  # Replace `your_labels` with the actual labels
-    plt.colorbar()
+        plt.scatter(embeddings_2d[indices, 0], embeddings_2d[indices, 1], label=label_names[label])
     plt.legend()
 
     # Save folder for t-SNE plot
