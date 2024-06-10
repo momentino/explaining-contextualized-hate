@@ -36,7 +36,7 @@ def eval(model, tokenizer, loader, device):
             all_predictions.extend(predicted)
             all_embeddings.append(last_hidden_state)
     all_embeddings = torch.cat(all_embeddings, dim=0)
-    all_embeddings = all_embeddings.numpy()  # Convert to numpy array
+    all_embeddings = all_embeddings.cpu().numpy()  # Convert to numpy array
 
     val_accuracy, val_precision, val_recall, val_f1 = calculate_metrics(all_predictions, all_labels)
     tsne_data = (all_embeddings, all_labels)
