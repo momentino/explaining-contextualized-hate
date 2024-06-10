@@ -25,6 +25,7 @@ def get_args_parser():
     parser.add_argument('--context', action='store_true')
     parser.add_argument('--checkpoint_path', type=str)
     parser.add_argument('--ignore_results', action='store_true',)
+    parser.add_argument('--random_seed', type=str)
     return parser
 
 # Function to load yaml configuration file
