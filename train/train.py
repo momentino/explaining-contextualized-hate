@@ -58,7 +58,7 @@ def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, cri
 
         print(" Wait for training...")
         """ Validation """
-        val_accuracy, val_precision, val_recall, val_f1 = eval(model,tokenizer, val_loader, device)
+        val_accuracy, val_precision, val_recall, val_f1, _ = eval(model,tokenizer, val_loader, device)
         print(f'Epoch [{epoch + 1}/{num_epochs}], '
               f'Validation Accuracy: {val_accuracy:.2f}, '
               f'Validation Precision: {val_precision:.2f}, '

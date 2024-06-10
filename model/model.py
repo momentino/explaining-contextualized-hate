@@ -11,5 +11,6 @@ class RobertaForToxicClassification(nn.Module):
     def forward(self, input_ids,attention_mask):
         roberta_outputs = self.roberta(input_ids=input_ids, attention_mask=attention_mask)
         pooler_output = roberta_outputs.pooler_output
+        last_hidden_state = roberta_outputs.last_hidden_state
         output = self.classification_head(pooler_output)
-        return output
+        return output, last_hidden_state.mean(dim=1)

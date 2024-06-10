@@ -1,13 +1,8 @@
 import torch
 from utils.utils import calculate_metrics
-
-from model.model import RobertaForToxicClassification
-from transformers import AutoTokenizer
-
 from tqdm import tqdm
-import os
-from utils.utils import load_config
 import numpy as np
+from sklearn.manifold import TSNE
 
 
 def eval(model, tokenizer, loader, device):
@@ -15,6 +10,7 @@ def eval(model, tokenizer, loader, device):
 
     all_predictions = []
     all_labels = []
+    all_embeddings = []
     with torch.no_grad():
         for inputs, labels in tqdm(loader):
             """ 
@@ -34,14 +30,17 @@ def eval(model, tokenizer, loader, device):
                 tokenized_inputs = tokenizer(inputs[0], padding='longest', return_tensors='pt', max_length=512, truncation=True)
             tokenized_inputs = tokenized_inputs.to(device)
             labels = labels.to(device)
-            outputs = model(**tokenized_inputs)
+            outputs, last_hidden_state = model(**tokenized_inputs)
             _, predicted = torch.max(outputs.data, 1)
             all_labels.extend(labels)
             all_predictions.extend(predicted)
+            all_embeddings.append(last_hidden_state)
+    all_embeddings = torch.cat(all_embeddings, dim=0)
+    all_embeddings = all_embeddings.numpy()  # Convert to numpy array
 
     val_accuracy, val_precision, val_recall, val_f1 = calculate_metrics(all_predictions, all_labels)
-
-    return val_accuracy, val_precision, val_recall, val_f1
+    tsne_data = (all_embeddings, all_labels)
+    return val_accuracy, val_precision, val_recall, val_f1, tsne_data
 
 
 def predict_proba(input, model, tokenizer, device):
@@ -52,10 +51,12 @@ def predict_proba(input, model, tokenizer, device):
         tokenized_inputs = tokenizer(input, add_special_tokens=True, padding='longest', return_tensors='pt',
                                      max_length=512, truncation=True)
         tokenized_inputs = tokenized_inputs.to(device)
-        outputs = model(**tokenized_inputs)
+        outputs,_ = model(**tokenized_inputs)
         outputs = outputs.to('cpu')
         proba = outputs.softmax(dim=-1).detach().numpy()
     return proba
+
+
 
 
 def eval_explanations(original_texts, no_rationales, only_rationales, model, tokenizer, device):

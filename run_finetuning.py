@@ -5,6 +5,7 @@ import argparse
 import os
 import yaml
 
+
 from model.model import RobertaForToxicClassification
 from utils.utils import get_optimizer, jsonl_to_df, get_loss_function, dataset_to_jsonl, load_config
 from data.dataset import ToxicLangDataset
@@ -13,15 +14,13 @@ from eval.eval import eval
 
 from transformers import AutoTokenizer
 
-import csv
-import pandas as pd
+
 
 def get_args_parser():
     parser = argparse.ArgumentParser('', add_help=False)
     parser.add_argument('--dataset_file_path', type=str)
     parser.add_argument('--random_seed', type=str)
     parser.add_argument('--context', action='store_true')
-
     return parser
 
 # Function to load yaml configuration file
@@ -32,6 +31,8 @@ def load_config(config_path, config_name):
     return config
 
 def main(args):
+    eval_mode = args.eval
+    ignore_results = args.ignore_results
     config_path = 'config'
     config = load_config(config_path, 'config.yaml') # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
     s = args.random_seed
@@ -80,32 +81,7 @@ def main(args):
     model_name = "yu22_" + s if "yu" in dataset_path else "pav20_" + s
     """ Train """
     train(model, tokenizer, train_loader, val_loader, config['training_epochs'],optimizer, criterion, os.path.join(model_save_path, model_name), device)
-
-    """ Evaluate """
-    model.load_state_dict(torch.load(os.path.join(model_save_path, model_name))) # Load best model
-    test_accuracy, test_precision, test_recall, test_f1 = eval(model, tokenizer, test_loader, device)
-    print(f'Test Accuracy: {test_accuracy:.2f}, '
-          f'Test Precision: {test_precision:.2f}, '
-          f'Test Recall: {test_recall:.2f}, '
-          f'Test F1: {test_f1:.2f}, ')
-
-    """ 
-        Read the results, and if the current ones are the best, save the train,test,split for the explanation part
-        We are going to use the best model in that experiment so we need to know its split because it is generated randomly every time. 
-    """
-    df = pd.read_csv(results_file)
-    filtered_df = df[df['context'] == context]
-    """ We need to see if it is the best among the one in the same category. We don't want to compare contextual with non contextual models' results. """
-    if not (filtered_df['f1'] > test_f1).any():
-        context_path = 'context' if context else 'no_context'
-        dataset_to_jsonl(dataset_df, 'train', os.path.join('datasets/'+dataset_name+'/data/best_run_splits/'+context_path,'train.jsonl'),context, dataset_name)
-        dataset_to_jsonl(dataset_df, 'val', os.path.join('datasets/'+dataset_name+'/data/best_run_splits/'+context_path,'val.jsonl'),context, dataset_name)
-        dataset_to_jsonl(dataset_df, 'test', os.path.join('datasets/'+dataset_name+'/data/best_run_splits/'+context_path,'test.jsonl'),context, dataset_name)
-    """ Save results """
-    results_row = [dataset_name, context,model_name, s, test_accuracy, test_precision, test_recall, test_f1]
-
-    combined_data = pd.concat([df, pd.DataFrame([results_row], columns=["dataset","context","model_name","seed","accuracy","precision","recall","f1"])], ignore_index=True)
-    combined_data.to_csv(results_file, index=False)
+    print(" Fine-tuning completed. ")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Explaining Contextualized Hate', parents=[get_args_parser()])

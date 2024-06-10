@@ -22,7 +22,7 @@ import pandas as pd
 def get_args_parser():
     parser = argparse.ArgumentParser('', add_help=False)
     parser.add_argument('--dataset_file_path', type=str)
-    parser.add_argument('--saved_model_name', type=str)
+    parser.add_argument('--checkpoint_path', type=str)
     parser.add_argument('--context', action='store_true')
 
     return parser
@@ -65,12 +65,12 @@ def main(args):
 
     loader = DataLoader(dataset, batch_size=1)
 
-    """ Define name of model """
-    model_name = args.saved_model_name
+    """ Get checkpoint path """
+    checkpoint_path = args.checkpoint_path
 
 
     """ Evaluate """
-    model.load_state_dict(torch.load(os.path.join(model_save_path, model_name))) # Load best model
+    model.load_state_dict(torch.load(checkpoint_path)) # Load best model
 
     save_explanation_plots_folder = os.path.join(config['save_plot_folder_lime'], "context" if context else "no_context")
     if not os.path.isdir(save_explanation_plots_folder):
