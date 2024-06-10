@@ -31,8 +31,6 @@ def load_config(config_path, config_name):
     return config
 
 def main(args):
-    eval_mode = args.eval
-    ignore_results = args.ignore_results
     config_path = 'config'
     config = load_config(config_path, 'config.yaml') # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
     s = args.random_seed

@@ -22,7 +22,6 @@ from transformers import AutoTokenizer
 def get_args_parser():
     parser = argparse.ArgumentParser('', add_help=False)
     parser.add_argument('--dataset_file_path', type=str)
-    parser.add_argument('--random_seed', type=str)
     parser.add_argument('--context', action='store_true')
     parser.add_argument('--checkpoint_path', type=str)
     parser.add_argument('--ignore_results', action='store_true',)
@@ -36,7 +35,6 @@ def load_config(config_path, config_name):
     return config
 
 def main(args):
-    eval_mode = args.eval
     ignore_results = args.ignore_results
     config_path = 'config'
     config = load_config(config_path, 'config.yaml') # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
