@@ -78,14 +78,15 @@ def main(args):
           f'Test F1: {test_f1:.2f}, ')
 
     """ t-SNE """
+    label_names = {0:"Hate",1:"Neutral", 2:"Counter-hate"}
     tsne = TSNE(n_components=2, random_state=42)
     embeddings_2d = tsne.fit_transform(embeddings)
 
     # Plot the result
     plt.figure(figsize=(10, 8))
-    plt.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], c=labels, cmap='viridis')  # Replace `your_labels` with the actual labels
+    plt.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], c=label_names[labels], cmap='viridis')  # Replace `your_labels` with the actual labels
     plt.colorbar()
-    plt.title("t-SNE visualization of RoBERTa embeddings")
+    plt.legend()
 
     # Save folder for t-SNE plot
     save_plot_folder = f'results/tsne_plots_{"context" if context else "no_context"}'
