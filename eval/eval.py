@@ -13,7 +13,6 @@ def eval(model, tokenizer, loader, device):
     all_embeddings = []
     with torch.no_grad():
         for inputs, labels in tqdm(loader):
-            print(inputs.shape)
             """ 
                 We need to consider two separate cases: the one where the context is absent and the one where it is present.
                 When we have the context, we need to concatenate them together and we use the special method encode_plus
@@ -30,6 +29,7 @@ def eval(model, tokenizer, loader, device):
             else:
                 tokenized_inputs = tokenizer(inputs[0], padding='longest', return_tensors='pt', max_length=512, truncation=True)
             tokenized_inputs = tokenized_inputs.to(device)
+            print(tokenized_inputs['input_ids'].shape)
             labels = labels.to(device)
             outputs, last_hidden_state = model(**tokenized_inputs)
             _, predicted = torch.max(outputs.data, 1)
