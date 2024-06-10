@@ -112,7 +112,7 @@ def main(args):
         """ Save results """
         results_row = [dataset_name, context, s, test_accuracy, test_precision, test_recall, test_f1]
 
-        combined_data = pd.concat([df, pd.DataFrame([results_row], columns=["dataset","context","model_name","seed","accuracy","precision","recall","f1"])], ignore_index=True)
+        combined_data = pd.concat([df, pd.DataFrame([results_row], columns=["dataset","context","seed","accuracy","precision","recall","f1"])], ignore_index=True)
         combined_data.to_csv(results_file, index=False)
 
 if __name__ == '__main__':
