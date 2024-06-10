@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 
 import argparse
 import os
+import numpy as np
 import yaml
 from sklearn.manifold import TSNE
 import pandas as pd
@@ -84,7 +85,11 @@ def main(args):
 
     # Plot the result
     plt.figure(figsize=(10, 8))
-    plt.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], c=label_names[labels], cmap='viridis')  # Replace `your_labels` with the actual labels
+    for label in np.unique(labels):
+        indices = np.where(labels == label)
+        plt.scatter(embeddings_2d[indices, 0], embeddings_2d[indices, 1],
+                    cmap='viridis', label=label_names[label])
+    plt.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], label=label_names[labels], cmap='viridis')  # Replace `your_labels` with the actual labels
     plt.colorbar()
     plt.legend()
 
