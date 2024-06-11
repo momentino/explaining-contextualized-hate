@@ -38,7 +38,7 @@ def explain_shap(dataloader, explainer, model, save_plot_folder, tokenizer, devi
     only_rationales = []
     # texts = [input[0][0] if len(input) < 2 else (input[0][0],input[1][0]) for input,_ in tqdm(dataloader)][:5] # just text or text+context
     texts = [input[0][0] if len(input) < 2 else input[0][0] + "</s></s>" + input[1][0] for input, _ in
-             tqdm(dataloader)][:2] # just text or text+context
+             tqdm(dataloader)] # just text or text+context
     explanations = explainer(texts)
     shap_values = explanations.values
 
