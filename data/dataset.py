@@ -1,26 +1,13 @@
 import torch
 from torch.utils.data import Dataset
 
-import json
-import pandas as pd
-
-from sklearn.utils import shuffle
-
 
 class ToxicLangDataset(Dataset):
-    def __init__(self, dataset_df, split, context, dataset_name):
+    def __init__(self, dataset_df, split, context):
         self.split = split
         self.df = dataset_df
 
         self.context = context
-
-
-        if(context):
-            if(dataset_name=="pavlopoulos20"):
-                self.df = self.df[self.df['context'].notna()] #take only those where context is not NaN
-        else:
-            if (dataset_name == "pavlopoulos20"):
-                self.df = self.df[self.df['context'].isna()]  # take only those where context is NaN
 
         train_limit = int(0.8 * len(self.df))
         val_limit = int(0.9 * len(self.df))
@@ -39,8 +26,8 @@ class ToxicLangDataset(Dataset):
         return len(self.labels)
 
     def __getitem__(self, idx):
-        if(self.context):
-            text = [self.contexts[idx],self.texts[idx]]
+        if self.context:
+            text = [self.contexts[idx], self.texts[idx]]
         else:
             text = [self.texts[idx]]
         label = self.labels[idx]

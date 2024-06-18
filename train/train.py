@@ -1,11 +1,11 @@
 import torch
-import copy
 from tqdm import tqdm
 
 from utils.utils import calculate_metrics
 from eval.eval import eval
-def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, criterion, model_save_path, device):
 
+
+def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, criterion, model_save_path, device):
     best_val_f1 = 0.0
 
     all_predictions = []
@@ -15,15 +15,14 @@ def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, cri
         model.train()
         running_loss = 0.0
 
-
         for inputs, labels in tqdm(train_loader):
             """ 
                 We need to consider two separate cases: the one where the context is absent and the one where it is present.
                 When we have the context, we need to concatenate them together and we use the special method encode_plus
             """
-            if(len(inputs)>1):
+            if (len(inputs) > 1):
                 tokenized_inputs = tokenizer.batch_encode_plus(
-                    batch_text_or_text_pairs=[(c,t) for c,t in zip(inputs[0],inputs[1])], # target
+                    batch_text_or_text_pairs=[(c, t) for c, t in zip(inputs[0], inputs[1])],  # target
                     add_special_tokens=True,  # Add [CLS] and [SEP]
                     return_tensors='pt',  # Return PyTorch tensors
                     padding='longest',  # Pad to the maximum length
@@ -31,7 +30,8 @@ def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, cri
                     truncation=True
                 )
             else:
-                tokenized_inputs = tokenizer(inputs[0], padding='longest', return_tensors='pt', max_length=512, truncation=True)
+                tokenized_inputs = tokenizer(inputs[0], padding='longest', return_tensors='pt', max_length=512,
+                                             truncation=True)
             tokenized_inputs = tokenized_inputs.to(device)
             labels = labels.to(device)
             outputs, _ = model(**tokenized_inputs)
@@ -58,7 +58,7 @@ def train(model, tokenizer, train_loader, val_loader, num_epochs, optimizer, cri
 
         print(" Wait for training...")
         """ Validation """
-        val_accuracy, val_precision, val_recall, val_f1, _ = eval(model,tokenizer, val_loader, device)
+        val_accuracy, val_precision, val_recall, val_f1, _ = eval(model, tokenizer, val_loader, device)
         print(f'Epoch [{epoch + 1}/{num_epochs}], '
               f'Validation Accuracy: {val_accuracy:.2f}, '
               f'Validation Precision: {val_precision:.2f}, '

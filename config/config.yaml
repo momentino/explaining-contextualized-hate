@@ -1,10 +1,8 @@
 # Settings about the model
 model: roberta-base
 # Num classes for the two datasets
-n_class_pavlopoulos20: 2
-n_class_yu22: 3
-class_names_pavlopoulos20: ["not-hate","hate"]
-class_names_yu22: ["hate","neutral","counter-hate"]
+n_class: 3
+class_names: ["hate","neutral","counter-hate"]
 
 # Device settings
 device: cuda:0

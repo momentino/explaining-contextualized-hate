@@ -9,15 +9,12 @@ from sklearn.manifold import TSNE
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
-
 from model.model import RobertaForToxicClassification
-from utils.utils import jsonl_to_df, dataset_to_jsonl, load_config
+from utils.utils import jsonl_to_df, load_config
 from data.dataset import ToxicLangDataset
 from eval.eval import eval
 
 from transformers import AutoTokenizer
-
 
 
 def get_args_parser():
@@ -25,9 +22,10 @@ def get_args_parser():
     parser.add_argument('--dataset_file_path', type=str)
     parser.add_argument('--context', action='store_true')
     parser.add_argument('--checkpoint_path', type=str)
-    parser.add_argument('--ignore_results', action='store_true',)
+    parser.add_argument('--ignore_results', action='store_true', )
     parser.add_argument('--random_seed', type=str)
     return parser
+
 
 # Function to load yaml configuration file
 def load_config(config_path, config_name):
@@ -36,21 +34,20 @@ def load_config(config_path, config_name):
 
     return config
 
+
 def main(args):
     ignore_results = args.ignore_results
     config_path = 'config'
-    config = load_config(config_path, 'config.yaml') # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
+    config = load_config(config_path,
+                         'config.yaml')  # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
     s = args.random_seed
     results_file = config['results_path']
     dataset_file_path = args.dataset_file_path
     context = True if args.context else False
-
-    dataset_name = "yu22" if "yu" in dataset_file_path else "pavlopoulos20"
-
     device = torch.device(config['device'])
 
     """ Model """
-    model = RobertaForToxicClassification(config['model'],config['n_class_'+dataset_name])
+    model = RobertaForToxicClassification(config['model'], config['n_class'])
     model = model.to(device)
     model_save_path = config['model_save_path']
     if not os.path.exists(model_save_path):
@@ -71,15 +68,16 @@ def main(args):
     checkpoint_path = args.checkpoint_path
 
     """ Evaluate """
-    model.load_state_dict(torch.load(checkpoint_path)) # Load best model
-    test_accuracy, test_precision, test_recall, test_f1, (embeddings, labels) = eval(model, tokenizer, test_loader, device)
+    model.load_state_dict(torch.load(checkpoint_path))  # Load best model
+    test_accuracy, test_precision, test_recall, test_f1, (embeddings, labels) = eval(model, tokenizer, test_loader,
+                                                                                     device)
     print(f'Test Accuracy: {test_accuracy:.2f}, '
           f'Test Precision: {test_precision:.2f}, '
           f'Test Recall: {test_recall:.2f}, '
           f'Test F1: {test_f1:.2f}, ')
 
     """ t-SNE """
-    label_names = {0:"Hate",1:"Neutral", 2:"Counter-hate"}
+    label_names = {0: "Hate", 1: "Neutral", 2: "Counter-hate"}
     tsne = TSNE(n_components=2, random_state=42)
     embeddings_2d = tsne.fit_transform(embeddings)
 
@@ -102,18 +100,14 @@ def main(args):
             We are going to use the best model in that experiment so we need to know its split because it is generated randomly every time. 
         """
         df = pd.read_csv(results_file)
-        filtered_df = df[df['context'] == context]
-        """ We need to see if it is the best among the one in the same category. We don't want to compare contextual with non contextual models' results. """
-        if not (filtered_df['f1'] > test_f1).any():
-            context_path = 'context' if context else 'no_context'
-            dataset_to_jsonl(dataset_df, 'train', os.path.join('datasets/'+dataset_name+'/data/best_run_splits/'+context_path,'train.jsonl'),context, dataset_name)
-            dataset_to_jsonl(dataset_df, 'val', os.path.join('datasets/'+dataset_name+'/data/best_run_splits/'+context_path,'val.jsonl'),context, dataset_name)
-            dataset_to_jsonl(dataset_df, 'test', os.path.join('datasets/'+dataset_name+'/data/best_run_splits/'+context_path,'test.jsonl'),context, dataset_name)
         """ Save results """
-        results_row = [dataset_name, context, s, test_accuracy, test_precision, test_recall, test_f1]
+        results_row = [context, s, test_accuracy, test_precision, test_recall, test_f1]
 
-        combined_data = pd.concat([df, pd.DataFrame([results_row], columns=["dataset","context","seed","accuracy","precision","recall","f1"])], ignore_index=True)
+        combined_data = pd.concat(
+            [df, pd.DataFrame([results_row], columns=["context", "seed", "accuracy", "precision", "recall", "f1"])],
+            ignore_index=True)
         combined_data.to_csv(results_file, index=False)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Explaining Contextualized Hate', parents=[get_args_parser()])

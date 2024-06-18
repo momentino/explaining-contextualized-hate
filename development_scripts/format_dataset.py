@@ -3,14 +3,14 @@ import os
 import json
 
 
-pav_data_folder = '../datasets/pavlopoulos20/data/CAT_LARGE'
+data_folder = '../datasets/pavlopoulos20/data/CAT_LARGE'
 
 out = '../datasets/formatted_datasets'
 i = 0 # so that we have a unique index for both
 # Iterate over files in the folder
-for filename in os.listdir(pav_data_folder):
+for filename in os.listdir(data_folder):
     if filename.endswith('.csv'):  # Check if the file is a CSV file
-        file_path = os.path.join(pav_data_folder, filename)
+        file_path = os.path.join(data_folder, filename)
         # Read CSV file into a pandas DataFrame
         df = pd.read_csv(file_path)
         # Now you can work with the DataFrame (df) as needed

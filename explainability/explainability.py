@@ -1,13 +1,8 @@
-import eval.eval
-from eval.eval import predict_proba
 from tqdm import tqdm
 import numpy as np
-import matplotlib.pyplot as plt
 import shap
-from explainability.lime_text import IndexedString
-
-
-# Text.token_segments = custom_shap_token_segments # Monkey patch with SHAP because it doesn't support inputs that are multiple sequences separated by </s></s> tokens
+from lime_text import IndexedString
+from eval.eval import predict_proba
 
 def explain_lime(dataloader, explainer, top_labels, save_plot_folder, model, tokenizer, device):
     no_rationales = []
@@ -22,11 +17,12 @@ def explain_lime(dataloader, explainer, top_labels, save_plot_folder, model, tok
         explanation_as_map = exp.as_map()[pred_id]
         """ We match the explanations with the tokens obtained by the tokenizer LIME library uses. Then we extract the rationales"""
         lime_tokenized_text = IndexedString(text, bow=False).inverse_vocab
-        #print(lime_tokenized_text)
-        #print(explanation_as_map)
-        explanation_as_map = sorted(explanation_as_map, key=lambda x: x[0]) # the indexes of the map are not in the right order
-        text_without_rationales = " ".join([t for t,(index,score) in zip(lime_tokenized_text, explanation_as_map) if score<=0])
-        text_only_rationales = " ".join([t for t,(index,score) in zip(lime_tokenized_text, explanation_as_map) if score>0])
+        explanation_as_map = sorted(explanation_as_map,
+                                    key=lambda x: x[0])  # the indexes of the map are not in the right order
+        text_without_rationales = " ".join(
+            [t for t, (index, score) in zip(lime_tokenized_text, explanation_as_map) if score <= 0])
+        text_only_rationales = " ".join(
+            [t for t, (index, score) in zip(lime_tokenized_text, explanation_as_map) if score > 0])
         no_rationales.append(text_without_rationales)
         only_rationales.append(text_only_rationales)
 
@@ -36,9 +32,8 @@ def explain_lime(dataloader, explainer, top_labels, save_plot_folder, model, tok
 def explain_shap(dataloader, explainer, model, save_plot_folder, tokenizer, device):
     no_rationales = []
     only_rationales = []
-    # texts = [input[0][0] if len(input) < 2 else (input[0][0],input[1][0]) for input,_ in tqdm(dataloader)][:5] # just text or text+context
     texts = [input[0][0] if len(input) < 2 else input[0][0] + "</s></s>" + input[1][0] for input, _ in
-             tqdm(dataloader)] # just text or text+context
+             tqdm(dataloader)]  # just text or text+context
     explanations = explainer(texts)
     shap_values = explanations.values
 
@@ -51,9 +46,9 @@ def explain_shap(dataloader, explainer, model, save_plot_folder, tokenizer, devi
         pred_id = np.argmax(pred_classes)
         explanation = shap_values[i].T[
             pred_id]  # Shape shap_values[i]: len x num_classes, shap_values[i].T: num_classes x len
-        for i, exp in enumerate(explanation):
-            if (exp > 0):
-                shap_score[i] = exp
+        for j, exp in enumerate(explanation):
+            if exp > 0:
+                shap_score[j] = exp
 
         tokens = tokenizer(text, add_special_tokens=True, padding='longest', return_tensors='pt',
                            max_length=512, truncation=True)['input_ids'][0]
