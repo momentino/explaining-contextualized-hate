@@ -44,9 +44,6 @@ def main(args):
     """ Model """
     model = RobertaForToxicClassification(config['model'], config['n_class'])
     model = model.to(device)
-    model_save_path = config['model_save_path']
-    if not os.path.exists(model_save_path):
-        os.makedirs(model_save_path)
 
     """ Tokenizer """
     tokenizer = AutoTokenizer.from_pretrained(config['model'])

@@ -18,6 +18,7 @@ from transformers import AutoTokenizer
 
 import pandas as pd
 
+
 def get_args_parser():
     parser = argparse.ArgumentParser('', add_help=False)
     parser.add_argument('--dataset_file_path', type=str)
@@ -29,6 +30,7 @@ def get_args_parser():
 
     return parser
 
+
 # Function to load yaml configuration file
 def load_config(config_path, config_name):
     with open(os.path.join(config_path, config_name)) as file:
@@ -36,9 +38,11 @@ def load_config(config_path, config_name):
 
     return config
 
+
 def main(args):
     config_path = 'config'
-    config = load_config(config_path, 'config.yaml') # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
+    config = load_config(config_path,
+                         'config.yaml')  # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
     s = args.random_seed
     no_split = args.no_split
     results_file = config['explainability_results_path']
@@ -48,11 +52,8 @@ def main(args):
     device = torch.device(config['device'])
 
     """ Model """
-    model = RobertaForToxicClassification(config['model'],config['n_class'])
+    model = RobertaForToxicClassification(config['model'], config['n_class'])
     model = model.to(device)
-    model_save_path = config['model_save_path']
-    if not os.path.exists(model_save_path):
-        os.makedirs(model_save_path)
 
     """ Tokenizer """
     tokenizer = AutoTokenizer.from_pretrained(config['model'])
@@ -70,30 +71,34 @@ def main(args):
     """ Get checkpoint path """
     checkpoint_path = args.checkpoint_path
 
-
     """ Evaluate """
-    model.load_state_dict(torch.load(checkpoint_path)) # Load best model
+    model.load_state_dict(torch.load(checkpoint_path))  # Load best model
 
-    save_explanation_plots_folder = os.path.join(config['save_plot_folder_lime'], "context" if context else "no_context")
+    save_explanation_plots_folder = os.path.join(config['save_plot_folder_lime'],
+                                                 "context" if context else "no_context")
     if not os.path.isdir(save_explanation_plots_folder):
         os.mkdir(save_explanation_plots_folder)
     explainer = LimeTextExplainer(class_names=config['class_names'], bow=False)
-    original_texts, no_rationales,only_rationales = explain_lime(loader, explainer, config['n_class'],
-                                save_explanation_plots_folder,
-                                model,
-                                tokenizer,
-                                device)
+    original_texts, no_rationales, only_rationales = explain_lime(loader, explainer, config['n_class'],
+                                                                  save_explanation_plots_folder,
+                                                                  model,
+                                                                  tokenizer,
+                                                                  device)
 
-    comprehensiveness, sufficiency = eval_explanations(original_texts, no_rationales, only_rationales, model, tokenizer, device)
-    print(" Quality of the explanations evaluated. Comprehensiveness: {}, Sufficiency: {}".format(comprehensiveness,sufficiency))
+    comprehensiveness, sufficiency = eval_explanations(original_texts, no_rationales, only_rationales, model, tokenizer,
+                                                       device)
+    print(" Quality of the explanations evaluated. Comprehensiveness: {}, Sufficiency: {}".format(comprehensiveness,
+                                                                                                  sufficiency))
     df = pd.read_csv(results_file)
-    results_row = [context, 'LIME',comprehensiveness,sufficiency]
+    results_row = [context, 'LIME', comprehensiveness, sufficiency]
     combined_data = pd.concat([df, pd.DataFrame([results_row],
-                                                columns=["context","exp_method","comprehensiveness","sufficiency"])], ignore_index=True)
+                                                columns=["context", "exp_method", "comprehensiveness", "sufficiency"])],
+                              ignore_index=True)
     combined_data.to_csv(results_file, index=False)
 
     """ Save the folder with the explanations to ZIP so that we can get it when running in the Colab """
-    shutil.make_archive(f'{config["save_plot_folder_lime"]}/plots_{"context" if context else "no_context"}', 'zip', save_explanation_plots_folder)
+    shutil.make_archive(f'{config["save_plot_folder_lime"]}/plots_{"context" if context else "no_context"}', 'zip',
+                        save_explanation_plots_folder)
 
 
 if __name__ == '__main__':

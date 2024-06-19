@@ -12,12 +12,14 @@ from train.train import train
 
 from transformers import AutoTokenizer
 
+
 def get_args_parser():
     parser = argparse.ArgumentParser('', add_help=False)
     parser.add_argument('--dataset_file_path', type=str)
     parser.add_argument('--random_seed', type=int)
     parser.add_argument('--context', action='store_true')
     return parser
+
 
 # Function to load yaml configuration file
 def load_config(config_path, config_name):
@@ -26,9 +28,11 @@ def load_config(config_path, config_name):
 
     return config
 
+
 def main(args):
     config_path = 'config'
-    config = load_config(config_path, 'config.yaml') # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
+    config = load_config(config_path,
+                         'config.yaml')  # load the configuration file (the parameters will then be used like a dictionary with key-value pairs
     s = args.random_seed
     dataset_file_path = args.dataset_file_path
     context = True if args.context else False
@@ -36,11 +40,11 @@ def main(args):
     device = torch.device(config['device'])
 
     """ Model """
-    model = RobertaForToxicClassification(config['model'],config['n_class'])
+    model = RobertaForToxicClassification(config['model'], config['n_class'])
     model = model.to(device)
-    model_save_path = config['model_save_path']
-    if not os.path.exists(model_save_path):
-        os.makedirs(model_save_path)
+    model_save_path_base = config['model_save_path_base']
+    if not os.path.exists(model_save_path_base):
+        os.makedirs(model_save_path_base)
 
     """ Optimizer """
     optimizer_name = config['optimizer']
@@ -66,8 +70,10 @@ def main(args):
     train_loader = DataLoader(train_dataset, batch_size=config['batch_size'])
     val_loader = DataLoader(val_dataset, batch_size=config['batch_size'])
 
+    model_save_path = os.path.join(model_save_path_base, f'yu22_{s}.pth')
     """ Train """
-    train(model, tokenizer, train_loader, val_loader, config['training_epochs'],optimizer, criterion, model_save_path, device)
+    train(model, tokenizer, train_loader, val_loader, config['training_epochs'], optimizer, criterion, model_save_path,
+          device)
     print(" Fine-tuning completed. ")
 
 

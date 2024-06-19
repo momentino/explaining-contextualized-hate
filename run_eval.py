@@ -49,9 +49,6 @@ def main(args):
     """ Model """
     model = RobertaForToxicClassification(config['model'], config['n_class'])
     model = model.to(device)
-    model_save_path = config['model_save_path']
-    if not os.path.exists(model_save_path):
-        os.makedirs(model_save_path)
 
     """ Tokenizer """
     tokenizer = AutoTokenizer.from_pretrained(config['model'])
@@ -60,7 +57,7 @@ def main(args):
     dataset_path = dataset_file_path
     dataset_df = jsonl_to_df(dataset_path, s)
 
-    test_dataset = ToxicLangDataset(dataset_df=dataset_df, split='test', context=context, dataset_name=dataset_name)
+    test_dataset = ToxicLangDataset(dataset_df=dataset_df, split='test', context=context)
 
     test_loader = DataLoader(test_dataset, batch_size=config['batch_size'])
 

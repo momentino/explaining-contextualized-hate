@@ -20,7 +20,7 @@ weight_decay: 0.0001
 criterion: CrossEntropyLoss
 
 # Path for saved models
-model_save_path: weights
+model_save_path_base: weights
 
 # Path of result file
 results_path: results/results.csv
