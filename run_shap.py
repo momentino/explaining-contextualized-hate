@@ -80,7 +80,7 @@ def main(args):
     df = pd.read_csv(results_file)
     results_row = [context, 'SHAP', comprehensiveness, sufficiency]
     combined_data = pd.concat([df, pd.DataFrame([results_row],
-                                                columns=["dataset", "context", "exp_method", "comprehensiveness",
+                                                columns=["context", "exp_method", "comprehensiveness",
                                                          "sufficiency"])], ignore_index=True)
     combined_data.to_csv(results_file, index=False)
 
