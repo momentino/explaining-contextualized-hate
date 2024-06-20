@@ -1,7 +1,7 @@
 from tqdm import tqdm
 import numpy as np
 import shap
-from lime_text import IndexedString
+from explainability.lime_text import IndexedString
 from eval.eval import predict_proba
 
 def explain_lime(dataloader, explainer, top_labels, save_plot_folder, model, tokenizer, device):
