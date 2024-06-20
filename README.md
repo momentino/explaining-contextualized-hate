@@ -13,14 +13,14 @@ You can choose your preferred random seed. Use `--context` if you with to fine-t
 python run_finetuning.py --dataset_file_path=datasets/yu22/data/dataset.jsonl --random_seed=349
 ```
 ## Evaluate
-Use the same seed used during fine-tuning.
-Use `--context` if you with to consider contextual information.
+Use the same seed used during fine-tuning.  
+Use `--context` if you with to consider contextual information.  
 Define with `--checkpoint_path` the location of the model weights.
 ```
 python run_eval.py --dataset_file_path=datasets/yu22/data/dataset.jsonl --random_seed=349 --checkpoint_path=/path/model/weights
 ```
 ## Get Explanations
-Also here, make sure to use the same seed used during fine-tuning.
+Also here, make sure to use the same seed used during fine-tuning.  
 Same considerations as for the model evaluation regarding `--context` and `--checkpoint_path`.
 ### LIME
 
